@@ -76,7 +76,7 @@ void array_free(array_t array){
 }
 
 void array_print(array_t array){
-    printf("Printing contents of dynamic array\nCapacity: %d\nSize: %d\nData:\n", array->capacity, array->size);
+    printf("\nPrinting contents of dynamic array\nCapacity: %d\nSize: %d\nData:\n", array->capacity, array->size);
     for (int i = 0; i < array->size; i++){
         if (array->data[i] == NULL){
             continue;

@@ -6,10 +6,14 @@
 #ifndef TABLE_H
 #define TABLE_H
 
-// Internal table implementation
-struct table_impl;
+// Pair type
+typedef struct {
+    char *key;
+    int value; 
+} pair_t;
 
-// Public pointer to table_impl
+// Table type
+struct table_impl;
 typedef struct table_impl* table_t;
 
 // Public API functions
