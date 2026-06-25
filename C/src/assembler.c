@@ -157,9 +157,7 @@ static void read_assembly(asm_t *ctx){
     // Push array termination entry to end of array
     array_push(ctx->assembly, NULL);
 
-    for(int i = 0; array_get(ctx->assembly, i) != NULL; i++){
-        printf("%d: %s", i+1, array_get(ctx->assembly, i));
-    }
+    array_print(ctx->assembly);
 
     // Close the file
     fclose(file);
