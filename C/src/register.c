@@ -19,10 +19,12 @@ static const pair_t register_table[] = {
 
 // Functions
 const pair_t *register_lookup(const char *key){
-    for (int i = 0; register_table[i].key != NULL; i++){
-         if (strcmp(register_table[i].key, key) == 0){
-            return &register_table[i];
-         }
+    if (key != NULL){
+        for (int i = 0; register_table[i].key != NULL; i++){
+            if (strcmp(register_table[i].key, key) == 0){
+                return &register_table[i];
+            }
+        }
     }
     fprintf(stderr, "Error: register lookup given unknown key");
     exit(1);
