@@ -14,7 +14,7 @@
 // Struct for assembler
 typedef struct {
     const char *filename;
-    int error;
+    FILE *file;
     array_t assembly;
     master_array_t clean_assembly;
     //table_t const_table;
@@ -24,18 +24,19 @@ typedef struct {
 } asm_t;
 
 // Core function prototypes
-static void read_assembly(asm_t *);
-static void format_assembly(asm_t *);
-static void subroutine_gen(asm_t *);
-static void create_data_file(const asm_t *);
-static void isolate_instructions(asm_t *);
-static void create_instruction_file(const asm_t *);
+static void read_assembly(asm_t *ctx);
+static void format_assembly(asm_t *ctx);
+static void subroutine_gen(asm_t *ctx);
+static void create_data_file(const asm_t *ctx);
+static void isolate_instructions(asm_t *ctx);
+static void create_instruction_file(const asm_t *ctx);
 
 // Helper function prototypes
-static void parse_value(char *);
+static void parse_value(char *str);
 
-static void asm_init(asm_t *, const char *);
-static void asm_free(asm_t *);
+static void asm_init(asm_t *ctx, const char *filename);
+static void asm_free(asm_t *ctx);
+static void asm_error(asm_t *ctx, const char *message);
 
 // Variables
 static const pair_t escape_table[] = {
@@ -53,27 +54,14 @@ int assemble(const char *filename){
 
     // Read .asm file
     read_assembly(&ctx);
-    if (ctx.error){
-        asm_free(&ctx);
-        return ASM_FAILURE;
-    }
 
     array_print(ctx.assembly);
 
     // Clean up the assembly
-    //format_assembly(&ctx);
-    if (ctx.error){
-        asm_free(&ctx);
-        return ASM_FAILURE;
-    }
+    format_assembly(&ctx);
 
     // TODO Implement next functions in assembler
 
-    // Determine return value
-    if (ctx.error){
-        asm_free(&ctx);
-        return ASM_FAILURE;
-    }
     asm_free(&ctx);
     return ASM_SUCCESS;
 }
@@ -81,27 +69,21 @@ int assemble(const char *filename){
 // Reads the assembly file
 static void read_assembly(asm_t *ctx){
     // open given assembly file
-    FILE *file = fopen(ctx->filename, "r");
+    ctx->file = fopen(ctx->filename, "r");
 
     // File cannot be found
-    if (!file){
-        fprintf(stderr, "Error: Could not open file '%s'\n", ctx->filename);
-        ctx->error = 1;
-        return;
+    if (!ctx->file){
+        asm_error(ctx, "Error: Could not open .asm file");
     }
 
     char buffer[MAX_LINE_LENGTH];
 
     // Read from file
-    while (fgets(buffer, sizeof(buffer), file) != NULL){
+    while (fgets(buffer, sizeof(buffer), ctx->file) != NULL){
         buffer[strcspn(buffer, "\r\n")] = '\0';
         array_append(ctx->assembly, buffer);
     }
-
-    //array_print(ctx->assembly);
-
-    // Close the file
-    fclose(file);
+    fclose(ctx->file);
 }
 
 // Standardizes the riscv assembly to an array of lines which are arrays of their elements
@@ -130,14 +112,13 @@ static void create_instruction_file(const asm_t *ctx){
 }
 
 // Helper functions
-static void parse_value(char *ctx){
+static void parse_value(char *str){
 
 }
 
 // Assembler functions
 static void asm_init(asm_t *ctx, const char *filename){
     ctx->filename = filename;
-    ctx->error = 0;
     ctx->assembly = array_create(4);
     ctx->clean_assembly = master_array_create(4);
 }
@@ -146,5 +127,15 @@ static void asm_free(asm_t *ctx){
     ctx->filename = NULL;
     array_free(ctx->assembly);
     master_array_free(ctx->clean_assembly);
+}
+
+static void asm_error(asm_t *ctx, const char *message){
+    fprintf(stderr, "Assembler Error: %s\n", message);
+
+    if (ctx->file != NULL){
+        fclose(ctx->file);
+    }
+
+    exit(1);
 }
 
