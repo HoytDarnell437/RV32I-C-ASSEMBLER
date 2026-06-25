@@ -16,7 +16,7 @@ typedef struct {
     const char *filename;
     int error;
     array_t assembly;
-    char ***clean_assembly;
+    master_array_t clean_assembly;
     //table_t const_table;
     //table_t data_table;
     char *data_image;
@@ -139,10 +139,12 @@ static void asm_init(asm_t *ctx, const char *filename){
     ctx->filename = filename;
     ctx->error = 0;
     ctx->assembly = array_create(4);
+    ctx->clean_assembly = master_array_create(4);
 }
 
 static void asm_free(asm_t *ctx){
     ctx->filename = NULL;
     array_free(ctx->assembly);
+    master_array_free(ctx->clean_assembly);
 }
 
