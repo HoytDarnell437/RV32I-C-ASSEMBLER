@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "assembler.h"
+#include "../include/assembler.h"
 
 int main(int argc, char *argv[]){
     // incorrect usage of executable

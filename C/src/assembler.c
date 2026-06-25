@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "assembler.h"
-#include "dynamic_array.h"
+#include "../include/assembler.h"
+#include "../include/dynamic_array.h"
 
 // File macros
 #define MAX_LINE_LENGTH 512
