@@ -3,22 +3,10 @@
 #include <string.h>
 #include "../include/assembler.h"
 #include "../include/dynamic_array.h"
+#include "../include/table.h"
 
 // File macros
 #define MAX_LINE_LENGTH 512
-
-// Struct for lookup table pair
-typedef struct {
-    char *key;
-    int value; 
-} pair_t;
-
-// Struct for lookup table
-typedef struct {
-    int capacity;
-    int size;
-    pair_t *pairs;
-} table_t;
 
 // Struct for assembler
 typedef struct {
@@ -54,14 +42,6 @@ static void create_instruction_file(const asm_t *);
 
 // Helper function prototypes
 static void parse_value(char *);
-
-static void init_array(array_t *);
-static void push_array(array_t *, const char *);
-static void free_array(array_t *);
-
-static void init_table(table_t *);
-static void push_table(table_t *, const pair_t *);
-static void free_table(table_t *);
 
 static void init_asm(asm_t *, const char *);
 static void free_asm(asm_t *);
@@ -191,36 +171,6 @@ static void create_instruction_file(const asm_t *ctx){
 // Helper functions
 static void parse_value(char *ctx){
 
-}
-
-// lookup table functions
-static void init_table(table_t *table){
-    table->capacity = 4;
-    table->size = 0;
-    table->pairs = malloc(table->capacity * sizeof(pair_t));
-}
-
-static void push_table(table_t *table, const pair_t *pair){
-    if (table->size == table->capacity){
-        // Reallocate memory
-        table->capacity *= 2;
-        pair_t *new_table = realloc(table->pairs, table->capacity * sizeof(pair_t));
-        if (new_table == NULL){
-            fprintf(stderr, "Error: Out of memory\n");
-            exit(1);
-        }
-        table->pairs = new_table;
-    }
-    // Duplicate string into new spot
-    table->pairs[table->size] = *pair;
-    table->size++;
-}
-
-static void free_table(table_t *table){
-    free(table->pairs);
-    table->pairs = NULL;
-    table->size = 0;
-    table->capacity = 0;
 }
 
 // Assembler functions
