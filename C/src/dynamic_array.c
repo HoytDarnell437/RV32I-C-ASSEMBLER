@@ -50,7 +50,6 @@ array_t array_create(int initial_capacity){
 }
 
 void array_append(array_t array, const char *str){
-    if (str == NULL) return;
     if (array->size == array->capacity){
         // Double allocated memory when none is left
         array->capacity *= 2;
@@ -62,10 +61,15 @@ void array_append(array_t array, const char *str){
         array->data = new_data;
     }
     // Duplicate string into new spot
-    array->data[array->size] = strdup(str);
-    if (array->data[array->size] == NULL){
-        fprintf(stderr, "Error: Out of memory\n");
-        exit(1);
+    if (str != NULL){
+        array->data[array->size] = strdup(str);
+        if (array->data[array->size] == NULL){
+            fprintf(stderr, "Error: Out of memory\n");
+            exit(1);
+        }
+    }
+    else {
+        array->data[array->size] = NULL;
     }
     array->size++;
 }
@@ -81,7 +85,7 @@ void array_free(array_t array){
 void array_print(array_t array){
     printf("\n--- Printing contents of dynamic array (Size: %d  / Capacity: %d) ---\n", array->size, array->capacity);
     for (int i = 0; i < array->size; i++){
-        printf("%s\n", array->data[i]);
+        printf("%s\n", array->data[i] ? array->data[i] : "(NULL)");
     }
 }
 
@@ -91,7 +95,12 @@ void array_set(array_t array, const char *str, int index){
         exit(1);
     }
     free(array->data[index]);
-    array->data[index] = strdup(str);
+    if (str != NULL){
+        array->data[index] = strdup(str);
+    }
+    else {
+        array->data[index] = NULL;
+    }
 }
 
 const char *array_get(const array_t array, int index){
