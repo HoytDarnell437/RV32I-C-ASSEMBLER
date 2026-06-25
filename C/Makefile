@@ -1,7 +1,7 @@
 # Variables
 OUTPUT := build/main
 CFLAGS := -Iinclude
-SRC := src/main.c src/assembler.c src/dynamic_array.c src/instruction.c
+SRC := src/main.c src/assembler.c src/dynamic_array.c src/table.c src/instruction.c src/register.c
 ARG := assembly/code.asm
 
 # Special targets
