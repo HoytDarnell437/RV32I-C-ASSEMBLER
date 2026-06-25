@@ -83,6 +83,10 @@ static void read_assembly(asm_t *ctx){
         buffer[strcspn(buffer, "\r\n")] = '\0';
         array_append(ctx->assembly, buffer);
     }
+
+    // Add sentinel character
+    array_append(ctx->assembly, NULL);
+    
     fclose(ctx->file);
 }
 
