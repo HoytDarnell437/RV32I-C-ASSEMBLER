@@ -34,8 +34,8 @@ static void create_instruction_file(const asm_t *);
 // Helper function prototypes
 static void parse_value(char *);
 
-static void init_asm(asm_t *, const char *);
-static void free_asm(asm_t *);
+static void asm_init(asm_t *, const char *);
+static void asm_free(asm_t *);
 
 // Variables
 static const pair_t escape_table[] = {
@@ -49,13 +49,21 @@ static const pair_t escape_table[] = {
 int assemble(const char *filename){
     // Declare new asm_t variable and set its default values
     asm_t ctx;
-    init_asm(&ctx, filename);
+    asm_init(&ctx, filename);
 
     // Read .asm file
-    //read_assembly(&ctx);
-    instruction_lookup("addl");
+    read_assembly(&ctx);
     if (ctx.error){
-        free_asm(&ctx);
+        asm_free(&ctx);
+        return ASM_FAILURE;
+    }
+
+    array_print(ctx.assembly);
+
+    // Clean up the assembly
+    //format_assembly(&ctx);
+    if (ctx.error){
+        asm_free(&ctx);
         return ASM_FAILURE;
     }
 
@@ -63,10 +71,10 @@ int assemble(const char *filename){
 
     // Determine return value
     if (ctx.error){
-        free_asm(&ctx);
+        asm_free(&ctx);
         return ASM_FAILURE;
     }
-    free_asm(&ctx);
+    asm_free(&ctx);
     return ASM_SUCCESS;
 }
 
@@ -86,13 +94,11 @@ static void read_assembly(asm_t *ctx){
 
     // Read from file
     while (fgets(buffer, sizeof(buffer), file) != NULL){
-        //buffer[strcspn(buffer, "\r\n")] = '\0';
-        array_push(ctx->assembly, buffer);
+        buffer[strcspn(buffer, "\r\n")] = '\0';
+        array_append(ctx->assembly, buffer);
     }
-    // Push array termination entry to end of array
-    array_push(ctx->assembly, NULL);
 
-    array_print(ctx->assembly);
+    //array_print(ctx->assembly);
 
     // Close the file
     fclose(file);
@@ -129,13 +135,13 @@ static void parse_value(char *ctx){
 }
 
 // Assembler functions
-static void init_asm(asm_t *ctx, const char *filename){
+static void asm_init(asm_t *ctx, const char *filename){
     ctx->filename = filename;
     ctx->error = 0;
     ctx->assembly = array_create(4);
 }
 
-static void free_asm(asm_t *ctx){
+static void asm_free(asm_t *ctx){
     ctx->filename = NULL;
     array_free(ctx->assembly);
 }
