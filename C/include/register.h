@@ -5,9 +5,10 @@
 
 #ifndef REGISTER_H
 #define REGISTER_H
+#include "../include/table.h"
 
 
 // Public API functions
+const pair_t *register_lookup(const char *key);
 
-
-#endif // TABLE_H
+#endif // REGISTER_H
