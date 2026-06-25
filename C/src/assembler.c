@@ -55,7 +55,7 @@ int assemble(const char *filename){
     // Read .asm file
     read_assembly(&ctx);
 
-    array_print(ctx.assembly);
+    //array_print(ctx.assembly);
 
     // Clean up the assembly
     format_assembly(&ctx);
@@ -86,13 +86,15 @@ static void read_assembly(asm_t *ctx){
 
     // Add sentinel character
     array_append(ctx->assembly, NULL);
-    
+
     fclose(ctx->file);
 }
 
 // Standardizes the riscv assembly to an array of lines which are arrays of their elements
 static void format_assembly(asm_t *ctx){
-    
+    for (int i = 0; array_get(ctx->assembly, i) != NULL ; i++){
+        printf("%s\n", array_get(ctx->assembly, i));
+    }
 }
 
 // Generates arrays of labels and their addresses
@@ -135,11 +137,8 @@ static void asm_free(asm_t *ctx){
 
 static void asm_error(asm_t *ctx, const char *message){
     fprintf(stderr, "Assembler Error: %s\n", message);
-
     if (ctx->file != NULL){
         fclose(ctx->file);
     }
-
     exit(1);
 }
-
