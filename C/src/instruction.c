@@ -41,10 +41,12 @@ static void instruction_print(instruction_t instruction);
 
 // Functions
 const instruction_t *instruction_lookup(const char *name){
-    int i = 0;
-    for (int i = 0; instruction_table[i].name != NULL; i++){
-        if (strcmp(instruction_table[i].name, name) == 0){
-            return &instruction_table[i];
+    if (name != NULL){
+        int i = 0;
+        for (int i = 0; instruction_table[i].name != NULL; i++){
+            if (strcmp(instruction_table[i].name, name) == 0){
+                return &instruction_table[i];
+            }
         }
     }
     fprintf(stderr, "Error: passed invalid instruction to instruction_lookup '%s'\n", name);
