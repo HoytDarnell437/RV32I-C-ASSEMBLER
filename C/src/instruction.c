@@ -2,6 +2,8 @@
 // Institution: Georgia Institute of Technology
 // Implementation for instruction.h
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "../include/instruction.h"
 
@@ -34,21 +36,29 @@ static const instruction_t instruction_table[] = {
 
     {NULL}
 };
+// Function prototypes
+static void instruction_print(instruction_t instruction);
 
 // Functions
 const instruction_t *instruction_lookup(const char *name){
-    for (int i = 0; i < 42; i++){
-        instruction_print(instruction_table[i]);
+    int i = 0;
+    while (instruction_table[i].name != NULL){
+        if (strcmp(instruction_table[i].name, name) == 0){
+            return &instruction_table[i];
+        }
+        i++;
     }
+    fprintf(stderr, "Error: passed invalid instruction to instruction_lookup '%s'\n", name);
+    exit(1);
 }
 
-const void instruction_print(instruction_t instruction){
-    printf("%s | Opcode: %x", instruction.name, instruction.opcode);
+static void instruction_print(instruction_t instruction){
+    printf("%s | Opcode: 0x%x", instruction.name, instruction.opcode);
     if (instruction.funct3 != -1){
-        printf(" | funct3: %x", instruction.funct3);
+        printf(" | funct3: 0x%x", instruction.funct3);
     }
     if (instruction.funct7 != -1){
-        printf(" | funct7: %x", instruction.funct7);
+        printf(" | funct7: 0x%x", instruction.funct7);
     }
     printf("\n");
 }

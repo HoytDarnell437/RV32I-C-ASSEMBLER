@@ -21,4 +21,4 @@ typedef struct {
 // Public API functions
 const instruction_t *instruction_lookup(const char *name); // Returns instruction type of given instruction
 
-#endif // INSTURCTION_H
+#endif // INSTRUCTION_H
