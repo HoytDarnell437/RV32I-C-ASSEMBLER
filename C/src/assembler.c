@@ -53,7 +53,7 @@ int assemble(const char *filename){
 
     // Read .asm file
     //read_assembly(&ctx);
-    instruction_lookup(NULL);
+    instruction_lookup("addl");
     if (ctx.error){
         free_asm(&ctx);
         return ASM_FAILURE;
