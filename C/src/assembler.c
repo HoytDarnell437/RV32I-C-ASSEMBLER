@@ -24,8 +24,9 @@ typedef struct {
     FILE *file;
     array_t assembly;
     master_array_t clean_assembly;
-    //table_t const_table;
-    //table_t data_table;
+    table_t const_table;
+    table_t data_table;
+    table_t text_table;
     char *data_image;
     char *instructions;
 } asm_t;
@@ -41,8 +42,10 @@ static void create_instruction_file(const asm_t *ctx);
 // Helper function prototypes
 static void parse_value(char *str);
 
+// asm_t member function protoypes
 static void asm_init(asm_t *ctx, const char *filename);
 static void asm_free(asm_t *ctx);
+static void asm_dump(asm_t *ctx);
 static void asm_error(asm_t *ctx, const char *message);
 
 // Variables
@@ -146,12 +149,23 @@ static void asm_init(asm_t *ctx, const char *filename){
     ctx->filename = filename;
     ctx->assembly = array_create(4);
     ctx->clean_assembly = master_array_create(4);
+    ctx->const_table = table_create(4);
+    ctx->data_table = table_create(4);
+    ctx->text_table = table_create(4);
 }
 
 static void asm_free(asm_t *ctx){
     ctx->filename = NULL;
     array_free(ctx->assembly);
     master_array_free(ctx->clean_assembly);
+    table_free(ctx->const_table);
+    table_free(ctx->data_table);
+    table_free(ctx->text_table);
+}
+
+static void asm_dump(asm_t *ctx){
+    FILE *file = fopen(strcat(ctx->filename, "_asm_dump.txt"), "w");
+    
 }
 
 static void asm_error(asm_t *ctx, const char *message){
