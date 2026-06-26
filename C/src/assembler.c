@@ -32,21 +32,21 @@ typedef struct {
 } asm_t;
 
 // Core function prototypes
-static void read_assembly(asm_t *ctx);
-static void format_assembly(asm_t *ctx);
-static void subroutine_gen(asm_t *ctx);
-static void create_data_file(const asm_t *ctx);
-static void isolate_instructions(asm_t *ctx);
-static void create_instruction_file(const asm_t *ctx);
+static void read_assembly(asm_t *ctx); // Read assembly from given file
+static void format_assembly(asm_t *ctx); // Convert assembly to known format
+static void subroutine_gen(asm_t *ctx); // Generate tables of labels and their addresses
+static void create_data_file(const asm_t *ctx); // Create data initialization file
+static void isolate_instructions(asm_t *ctx); // Isolates instructions
+static void create_instruction_file(const asm_t *ctx); // Creates instruction initialization file
 
 // Helper function prototypes
-static void parse_value(char *str);
+static void parse_value(char *str); 
 
 // asm_t member function protoypes
-static void asm_init(asm_t *ctx, const char *filename);
-static void asm_free(asm_t *ctx);
-static void asm_dump(asm_t *ctx);
-static void asm_error(asm_t *ctx, const char *message);
+static void asm_init(asm_t *ctx, const char *filename); // Initialize all values in asm
+static void asm_free(asm_t *ctx); // Free all memory used by asm
+static void asm_dump(asm_t *ctx); // Dump all contents of asm to file
+static void asm_error(asm_t *ctx, const char *message); // Safely error and exit program
 
 // Variables
 static const pair_t escape_table[] = {
@@ -66,11 +66,12 @@ int assemble(const char *filename){
 
     format_assembly(&ctx); // Clean up the assembly
 
-    asm_dump(&ctx);
-
     // TODO 1
 
-    asm_free(&ctx);
+    asm_dump(&ctx); // Dump contents of ctx to file
+
+    asm_free(&ctx); // Free all contents of ctx
+
     return ASM_SUCCESS;
 }
 
