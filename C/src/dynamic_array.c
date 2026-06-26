@@ -49,10 +49,17 @@ array_t array_create(int initial_capacity){
     return array;
 }
 
+array_t array_dupe(array_t array){
+    array_t copy = array_create(array->capacity);
+    for (int i = 0; i < array->size; i++){
+        array_append(copy, array->data[i]);
+    }
+    return(copy);
+}
+
 void array_append(array_t array, const char *str){
     if (array->size == array->capacity){
-        // Double allocated memory when none is left
-        array->capacity *= 2;
+        array->capacity *= 2; // Double allocated memory when more is requested
         char **new_data = realloc(array->data, array->capacity * sizeof(char *));
         if (new_data == NULL){
             fprintf(stderr, "Error: Out of memory\n");
