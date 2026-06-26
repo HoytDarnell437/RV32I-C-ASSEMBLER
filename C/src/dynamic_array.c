@@ -97,10 +97,10 @@ void array_free(array_t array){
     free(array);
 }
 
-void array_print(array_t array){
-    printf("\n--- Printing contents of dynamic array (Size: %d  / Capacity: %d) ---\n", array->size, array->capacity);
+void array_print(array_t array, FILE *file){
+    fprintf(file, "\n--- Printing contents of dynamic array (Size: %d  / Capacity: %d) ---\n", array->size, array->capacity);
     for (int i = 0; i < array->size; i++){
-        printf("%s\n", array->data[i] ? array->data[i] : "(NULL)");
+        fprintf(file, "%s\n", array->data[i] ? array->data[i] : "(NULL)");
     }
 }
 
@@ -181,12 +181,12 @@ void master_array_free(master_array_t master){
         free(master);
 }
 
-void master_array_print(master_array_t master){
-    printf("\n--- Printing contents of master array (Size: %d  / Capacity: %d) ---\n", master->size, master->capacity);
+void master_array_print(master_array_t master, FILE *file){
+    fprintf(file, "\n--- Printing contents of master array (Size: %d  / Capacity: %d) ---\n", master->size, master->capacity);
     for (int i = 0; i < master->size; i++){
-        printf("\n--- Sub Array %d ---\n", i);
+        fprintf(file, "\n--- Sub Array %d ---\n", i);
         for (int j = 0; j < master->arrays[i]->size; j++){
-            printf("%s\n", master->arrays[i]->data[j] ? master->arrays[i]->data[j] : "(NULL)");
+            fprintf(file, "%s\n", master->arrays[i]->data[j] ? master->arrays[i]->data[j] : "(NULL)");
         }
     }
 }
