@@ -59,7 +59,7 @@ int assemble(const char *filename){
 
     // Clean up the assembly
     format_assembly(&ctx);
-
+    // TODO finish format_assembly
     // TODO Implement next functions in assembler
 
     asm_free(&ctx);
