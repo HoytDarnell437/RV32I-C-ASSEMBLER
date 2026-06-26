@@ -7,6 +7,14 @@
 #include "../include/instruction.h"
 #include "../include/register.h"
 
+/*
+
+--- TODO List ---
+1. Implement Remaining Fucntions
+2. Finish format_assembly function
+
+*/
+
 
 // File macros
 #define MAX_LINE_LENGTH 512
@@ -60,7 +68,7 @@ int assemble(const char *filename){
     // Clean up the assembly
     format_assembly(&ctx);
 
-    // TODO Implement next functions in assembler
+    // TODO 1
 
     asm_free(&ctx);
     return ASM_SUCCESS;
@@ -107,6 +115,7 @@ static void format_assembly(asm_t *ctx){
         }
     }
     master_array_print(ctx->clean_assembly);
+    // TODO 2
 }
 
 // Generates arrays of labels and their addresses
