@@ -60,13 +60,9 @@ int assemble(const char *filename){
     asm_t ctx;
     asm_init(&ctx, filename);
 
-    // Read .asm file
-    read_assembly(&ctx);
+    read_assembly(&ctx); // Read .asm file
 
-    //array_print(ctx.assembly);
-
-    // Clean up the assembly
-    format_assembly(&ctx);
+    format_assembly(&ctx); // Clean up the assembly
 
     // TODO 1
 
@@ -76,24 +72,20 @@ int assemble(const char *filename){
 
 // Reads the assembly file
 static void read_assembly(asm_t *ctx){
-    // open given assembly file
-    ctx->file = fopen(ctx->filename, "r");
+    ctx->file = fopen(ctx->filename, "r"); // Open given assembly file
 
-    // File cannot be found
-    if (!ctx->file){
+    if (!ctx->file){ // File cannot be found
         asm_error(ctx, "Error: Could not open .asm file");
     }
 
-    char buffer[MAX_LINE_LENGTH];
+    char buffer[MAX_LINE_LENGTH]; // Line buffer
 
-    // Read from file
-    while (fgets(buffer, sizeof(buffer), ctx->file) != NULL){
+    while (fgets(buffer, sizeof(buffer), ctx->file) != NULL){ // Read from file
         buffer[strcspn(buffer, "\r\n")] = '\0';
         array_append(ctx->assembly, buffer);
     }
 
-    // Add sentinel character
-    array_append(ctx->assembly, NULL);
+    array_append(ctx->assembly, NULL); // Append sentinel character to assembly array
 
     fclose(ctx->file);
 }
@@ -104,17 +96,27 @@ static void format_assembly(asm_t *ctx){
         char *tok = strtok(array_get(ctx->assembly, i), " ,()");
         array_t sub_array = array_create(1);
         while (tok != NULL){
-            if (tok[0] == '#'){
+            if (tok[0] == '#'){ // Remove comments
                 break;
             }
-            array_append(sub_array, tok);
-            tok = strtok(NULL, " ,()");
+
+            array_append(sub_array, tok); // Append token to sub_array
+
+            if (strchr(tok, ':') != NULL || strchr(tok, '.') != NULL){ // Separate same line labels and directives
+                printf("\nLabel or driective:\n");
+                array_print(sub_array);
+                master_array_append(ctx->clean_assembly, sub_array); // append label as own array
+            }
+
+            tok = strtok(NULL, " ,()"); // Get next token
         }
-        if (array_get_size(sub_array) != 0){
-            master_array_append(ctx->clean_assembly, sub_array);
+
+        if (array_get_size(sub_array) != 0 && strchr(array_get(sub_array, 0), ':') == NULL && strchr(array_get(sub_array, 0), '.') == NULL){
+            master_array_append(ctx->clean_assembly, sub_array); // Append instructions
+            array_print(sub_array);
         }
     }
-    master_array_print(ctx->clean_assembly);
+    master_array_print(ctx->clean_assembly); // Print array for debugging
     // TODO 2
 }
 
