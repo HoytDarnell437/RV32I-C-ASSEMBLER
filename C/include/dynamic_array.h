@@ -28,5 +28,6 @@ void master_array_print(master_array_t master); // Prints the contents of the ma
 
 void array_set(array_t array, const char *str, int index); // Changes the string at index of the array to the one provided
 char *array_get(const array_t array, int index); // Retrieves the string at the index of the array
+int array_get_size(const array_t array); // Retrieves the size of the array
 
 #endif // DYNAMIC_ARRAY_H
