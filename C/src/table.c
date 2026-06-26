@@ -16,7 +16,7 @@ typedef struct table_impl{
 
 // Function prototypes
 static pair_t pair_create(const char *key, int value);
-static void pair_print(pair_t pair);
+static void pair_print(pair_t pair, FILE *file);
 
 // Table functions
 table_t table_create(int initial_capacity){
@@ -52,10 +52,10 @@ void table_free(table_t table){
     free(table);
 }
 
-void table_print(table_t table){
-    printf("\n--- Printing contents of table (Size: %d /Capacity: %d) ---\n", table->size, table->capacity);
+void table_print(table_t table, FILE *file){
+    fprintf(file, "\n--- Printing contents of table (Size: %d /Capacity: %d) ---\n", table->size, table->capacity);
     for(int i = 0; i < table->size; i++){
-        pair_print(table->pairs[i]);
+        pair_print(table->pairs[i], file);
     }
 }
 
@@ -104,6 +104,6 @@ static pair_t pair_create(const char *key, int value){
     return pair;
 }
 
-static void pair_print(pair_t pair){
-    printf("%s | %d\n", pair.key, pair.value);
+static void pair_print(pair_t pair, FILE *file){
+    fprintf(file, "%s | %d\n", pair.key, pair.value);
 }

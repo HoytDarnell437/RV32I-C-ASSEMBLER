@@ -19,7 +19,7 @@ typedef struct table_impl* table_t;
 // Public API functions
 table_t table_create(int initial_capacity); // Create and initialize table variable 
 void table_free(table_t table); // Deallocates the memory used by the table
-void table_print(table_t table); // Prints the contents of the table to terminal
+void table_print(table_t table, FILE *file); // Prints the contents of the table to file
 
 void table_set(table_t table, const char *key, int value); // Adds a pair to the table or updates existing key to new value
 int table_get(const table_t table, const char *key, int *value); // Retrieves the value associated with the key
