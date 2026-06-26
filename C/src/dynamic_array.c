@@ -111,6 +111,10 @@ char *array_get(const array_t array, int index){
     return array->data[index];
 }
 
+int array_get_size(const array_t array){
+    return array->size;
+}
+
 // Master array functions
 master_array_t master_array_create(int initial_capacity){
     if (initial_capacity <= 0){
@@ -165,6 +169,7 @@ void master_array_free(master_array_t master){
 void master_array_print(master_array_t master){
     printf("\n--- Printing contents of master array (Size: %d  / Capacity: %d) ---\n", master->size, master->capacity);
     for (int i = 0; i < master->size; i++){
+        printf("\n--- Sub Array %d ---\n", i);
         for (int j = 0; j < master->arrays[i]->size; j++){
             printf("%s\n", master->arrays[i]->data[j] ? master->arrays[i]->data[j] : "(NULL)");
         }
