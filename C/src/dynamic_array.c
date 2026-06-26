@@ -74,6 +74,14 @@ void array_append(array_t array, const char *str){
     array->size++;
 }
 
+char *array_pop(array_t array){
+    if(array->size < 1) return NULL;
+    char *copy = array->data[array->size - 1];
+    array->data[array->size - 1] = NULL;
+    array->size -= 1;
+    return copy;
+}
+
 void array_free(array_t array){
     for (int i = 0; i < array->size; i++){
         free(array->data[i]);

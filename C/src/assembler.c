@@ -108,6 +108,9 @@ static void format_assembly(asm_t *ctx){
                 break;
             }
             array_append(sub_array, tok);
+            if (strchr(tok, ':') != NULL){
+                master_array_append(ctx->clean_assembly, sub_array);
+            }
             tok = strtok(NULL, " ,()");
         }
         if (array_get_size(sub_array) != 0){

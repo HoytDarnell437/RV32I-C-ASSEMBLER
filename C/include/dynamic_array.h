@@ -18,6 +18,7 @@ typedef struct master_array_impl* master_array_t;
 // Public API functions
 array_t array_create(int initial_capacity); // Create and initialize array variable 
 void array_append(array_t array, const char *str); // Appends a string to the array
+char *array_pop(array_t array); // Pops off the last value in the array
 void array_free(array_t array); // Deallocates the memory used by the array
 void array_print(array_t array); // Prints the contents of the array to terminal
 
