@@ -90,10 +90,19 @@ static void read_assembly(asm_t *ctx){
     fclose(ctx->file);
 }
 
-// Standardizes the riscv assembly to an array of lines which are arrays of their elements
+// Standardizes the riscv assembly to a master array of lines which are arrays of strings
 static void format_assembly(asm_t *ctx){
     for (int i = 0; array_get(ctx->assembly, i) != NULL ; i++){
-        printf("%s\n", array_get(ctx->assembly, i));
+        //printf("'%s'\n", array_get(ctx->assembly, i));
+        char *tok = strtok(array_get(ctx->assembly, i), " ");
+        while (tok != NULL){
+            if (tok[0] == '#' || tok[0] == ' '){
+                break;
+            }
+            tok[strcspn(tok, ",")] = '\0';
+            printf("'%s'\n", tok);
+            tok = strtok(NULL, " ");
+        }
     }
 }
 
@@ -121,6 +130,27 @@ static void create_instruction_file(const asm_t *ctx){
 static void parse_value(char *str){
 
 }
+/*
+static char *str_strip(char *str){
+    int start = -1;
+    int end = -1;
+    for (int i = 0; str[i] != '\0'; i++){
+        if (str[i] != 32){
+            if (start == -1){
+                start = i;
+            }
+            end = i;
+        }
+    }
+    if (start < end){
+        for (int i = start; i <= end; i++){
+
+        }
+    }
+    else {
+        return "";
+    }
+}*/
 
 // Assembler functions
 static void asm_init(asm_t *ctx, const char *filename){

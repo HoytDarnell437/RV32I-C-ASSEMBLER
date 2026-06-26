@@ -103,7 +103,7 @@ void array_set(array_t array, const char *str, int index){
     }
 }
 
-const char *array_get(const array_t array, int index){
+char *array_get(const array_t array, int index){
     if (index < 0 || index >= array->size){
         fprintf(stderr, "Error: function array_get out of bounds\n");
         exit(1);
@@ -160,4 +160,13 @@ void master_array_free(master_array_t master){
         }
         free(master->arrays);
         free(master);
+}
+
+void master_array_print(master_array_t master){
+    printf("\n--- Printing contents of master array (Size: %d  / Capacity: %d) ---\n", master->size, master->capacity);
+    for (int i = 0; i < master->size; i++){
+        for (int j = 0; j < master->arrays[i]->size; j++){
+            printf("%s\n", master->arrays[i]->data[j] ? master->arrays[i]->data[j] : "(NULL)");
+        }
+    }
 }
