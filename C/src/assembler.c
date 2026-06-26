@@ -10,8 +10,7 @@
 /*
 
 --- TODO List ---
-1. Implement Remaining Fucntions
-2. Finish format_assembly function
+1. Implement Remaining Functions
 
 */
 
@@ -103,9 +102,8 @@ static void format_assembly(asm_t *ctx){
             array_append(sub_array, tok); // Append token to sub_array
 
             if (strchr(tok, ':') != NULL || strchr(tok, '.') != NULL){ // Separate same line labels and directives
-                printf("\nLabel or driective:\n");
-                array_print(sub_array);
-                master_array_append(ctx->clean_assembly, sub_array); // append label as own array
+                master_array_append(ctx->clean_assembly, array_dupe(sub_array)); // append label as own array
+                free(array_pop(sub_array));
             }
 
             tok = strtok(NULL, " ,()"); // Get next token
@@ -113,11 +111,9 @@ static void format_assembly(asm_t *ctx){
 
         if (array_get_size(sub_array) != 0 && strchr(array_get(sub_array, 0), ':') == NULL && strchr(array_get(sub_array, 0), '.') == NULL){
             master_array_append(ctx->clean_assembly, sub_array); // Append instructions
-            array_print(sub_array);
         }
     }
     master_array_print(ctx->clean_assembly); // Print array for debugging
-    // TODO 2
 }
 
 // Generates arrays of labels and their addresses
