@@ -66,6 +66,8 @@ int assemble(const char *filename){
 
     format_assembly(&ctx); // Clean up the assembly
 
+    asm_dump(&ctx);
+
     // TODO 1
 
     asm_free(&ctx);
@@ -95,7 +97,7 @@ static void read_assembly(asm_t *ctx){
 // Standardizes the riscv assembly to a master array of lines which are arrays of strings
 static void format_assembly(asm_t *ctx){
     for (int i = 0; array_get(ctx->assembly, i) != NULL ; i++){
-        char *tok = strtok(array_get(ctx->assembly, i), " ,()");
+        char *tok = strtok(strdup(array_get(ctx->assembly, i)), " ,()");
         array_t sub_array = array_create(1);
         while (tok != NULL){
             if (tok[0] == '#'){ // Remove comments
@@ -116,7 +118,6 @@ static void format_assembly(asm_t *ctx){
             master_array_append(ctx->clean_assembly, sub_array); // Append instructions
         }
     }
-    master_array_print(ctx->clean_assembly); // Print array for debugging
 }
 
 // Generates arrays of labels and their addresses
@@ -164,8 +165,20 @@ static void asm_free(asm_t *ctx){
 }
 
 static void asm_dump(asm_t *ctx){
-    FILE *file = fopen(strcat(ctx->filename, "_asm_dump.txt"), "w");
-    
+    FILE *file = fopen("build/asm_dump.txt", "w");
+    fprintf(file, "--- asm_t memory dump ---\n");
+    fprintf(file, "Source file: %s\n", ctx->filename);
+    fprintf(file, "\nassembly:");
+    array_print(ctx->assembly, file);
+    fprintf(file, "\nclean_assembly:");
+    master_array_print(ctx->clean_assembly, file);
+    fprintf(file, "\nconst_table:");
+    table_print(ctx->const_table, file);
+    fprintf(file, "\ndata_table:");
+    table_print(ctx->data_table, file);
+    fprintf(file, "\ntext_table:");
+    table_print(ctx->text_table, file);
+    fclose(file);
 }
 
 static void asm_error(asm_t *ctx, const char *message){
