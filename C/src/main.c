@@ -5,13 +5,12 @@
 
 #include "../include/assembler.h"
 
-int main(int argc, char *argv[]){
-    // incorrect usage of executable
-    if(argc != 2){
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
         fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
         return 1;
     }
-    // assemble input file
+
     assemble(argv[1]);
 
     return 0;
