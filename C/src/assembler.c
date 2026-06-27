@@ -32,21 +32,21 @@ typedef struct {
 } asm_t;
 
 // Core function prototypes
-static void read_assembly(asm_t *ctx); // Read assembly from given file
-static void format_assembly(asm_t *ctx); // Convert assembly to known format
-static void subroutine_gen(asm_t *ctx); // Generate tables of labels and their addresses
-static void create_data_file(const asm_t *ctx); // Create data initialization file
-static void isolate_instructions(asm_t *ctx); // Isolates instructions
-static void create_instruction_file(const asm_t *ctx); // Creates instruction initialization file
+static void read_assembly(asm_t *ctx);
+static void format_assembly(asm_t *ctx);
+static void subroutine_gen(asm_t *ctx);
+static void create_data_file(const asm_t *ctx);
+static void isolate_instructions(asm_t *ctx);
+static void create_instruction_file(const asm_t *ctx);
 
 // Helper function prototypes
 static void parse_value(char *str); 
 
 // asm_t member function protoypes
-static void asm_init(asm_t *ctx, const char *filename); // Initialize all values in asm
-static void asm_free(asm_t *ctx); // Free all memory used by asm
-static void asm_dump(asm_t *ctx); // Dump all contents of asm to file
-static void asm_error(asm_t *ctx, const char *message); // Safely error and exit program
+static void asm_init(asm_t *ctx, const char *filename);
+static void asm_free(asm_t *ctx);
+static void asm_dump(asm_t *ctx);
+static void asm_error(asm_t *ctx, const char *message);
 
 // Variables
 static const pair_t escape_table[] = {
@@ -75,60 +75,74 @@ int assemble(const char *filename){
     return ASM_SUCCESS;
 }
 
-// Reads the assembly file
+/**
+* @brief Read the .asm file provided and store it in a dynamic array of type array_t.
+*
+* Moves through the file appending each line to ctx->assembly.
+*
+* @param ctx Pointer to the active assembler context structure.
+*/
 static void read_assembly(asm_t *ctx){
-    ctx->file = fopen(ctx->filename, "r"); // Open given assembly file
+    ctx->file = fopen(ctx->filename, "r");
+    char buffer[MAX_LINE_LENGTH];
+    size_t len;
 
-    if (!ctx->file){ // File cannot be found
+    if (!ctx->file) {
         asm_error(ctx, "Error: Could not open .asm file");
     }
 
-    char buffer[MAX_LINE_LENGTH]; // Line buffer
+    while (fgets(buffer, sizeof(buffer), ctx->file) != NULL) {
+        len = strlen(buffer);
 
-    while (fgets(buffer, sizeof(buffer), ctx->file) != NULL){ // Read from file
-        size_t len = strlen(buffer);
-
-        if (len == sizeof(buffer) - 1 && buffer[len-1] != '\n' && !feof(ctx->file)){
-            asm_error(ctx, "Error: Line in assembly file exeeds MAX_LINE_LENGTH");
+        if (len == sizeof(buffer) - 1 && buffer[len - 1] != '\n' && !feof(ctx->file)) {
+            asm_error(ctx, "Error: Line in assembly file exceeds MAX_LINE_LENGTH");
         }
 
         buffer[strcspn(buffer, "\r\n")] = '\0';
         array_append(ctx->assembly, buffer);
     }
 
-    array_append(ctx->assembly, NULL); // Append sentinel character to assembly array
-
+    array_append(ctx->assembly, NULL);
     fclose(ctx->file);
 }
 
-// Standardizes the riscv assembly to a master array of lines which are arrays of strings
-static void format_assembly(asm_t *ctx){
-    for (int i = 0; array_get(ctx->assembly, i) != NULL ; i++){
+/**
+* @brief Tokenize raw assembly lines into a structured 2D array.
+*
+* Moves through the assembly array_t tokenizing each line into array_t of their own and appending them to clean_assembly a master_array_t type.
+* Removes comments and separates same line labels.
+*
+* @param ctx Pointer to the active assembler context structure.
+*/
+static void format_assembly(asm_t *ctx) {
+    for (int i = 0; array_get(ctx->assembly, i) != NULL; i++) {
         char *str = strdup(array_get(ctx->assembly, i));
         char *tok = strtok(str, " ,()");
         array_t sub_array = array_create(1);
-        while (tok != NULL){
-            if (tok[0] == '#'){ // Remove comments
+
+        while (tok != NULL) {
+            if (tok[0] == '#') {
                 break;
             }
 
-            array_append(sub_array, tok); // Append token to sub_array
+            // Note: array_append handles deep-copying internally via strdup
+            array_append(sub_array, tok);
 
-            if (strchr(tok, ':') != NULL){ // Separate same line labels
-                master_array_append(ctx->clean_assembly, array_dupe(sub_array)); // append label as own array
+            if (strchr(tok, ':') != NULL) { 
+                master_array_append(ctx->clean_assembly, array_dupe(sub_array));
                 free(array_pop(sub_array));
             }
 
-            tok = strtok(NULL, " ,()"); // Get next token
+            tok = strtok(NULL, " ,()");
         }
 
-        if (array_get_size(sub_array) != 0 && strchr(array_get(sub_array, 0), ':') == NULL){
-            master_array_append(ctx->clean_assembly, sub_array); // Append instructions
-        }
-        else {
+        if (array_get_size(sub_array) != 0 && strchr(array_get(sub_array, 0), ':') == NULL) {
+            master_array_append(ctx->clean_assembly, sub_array);
+        } else {
             array_free(sub_array);
-            free(str);
         }
+
+        free(str);
     }
 }
 
