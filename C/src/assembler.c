@@ -86,6 +86,12 @@ static void read_assembly(asm_t *ctx){
     char buffer[MAX_LINE_LENGTH]; // Line buffer
 
     while (fgets(buffer, sizeof(buffer), ctx->file) != NULL){ // Read from file
+        size_t len = strlen(buffer);
+
+        if (len == sizeof(buffer) - 1 && buffer[len-1] != '\n' && !feof(ctx->file)){
+            asm_error(ctx, "Error: Line in assembly file exeeds MAX_LINE_LENGTH");
+        }
+
         buffer[strcspn(buffer, "\r\n")] = '\0';
         array_append(ctx->assembly, buffer);
     }
@@ -98,7 +104,8 @@ static void read_assembly(asm_t *ctx){
 // Standardizes the riscv assembly to a master array of lines which are arrays of strings
 static void format_assembly(asm_t *ctx){
     for (int i = 0; array_get(ctx->assembly, i) != NULL ; i++){
-        char *tok = strtok(strdup(array_get(ctx->assembly, i)), " ,()");
+        char *str = strdup(array_get(ctx->assembly, i));
+        char *tok = strtok(str, " ,()");
         array_t sub_array = array_create(1);
         while (tok != NULL){
             if (tok[0] == '#'){ // Remove comments
@@ -117,6 +124,10 @@ static void format_assembly(asm_t *ctx){
 
         if (array_get_size(sub_array) != 0 && strchr(array_get(sub_array, 0), ':') == NULL){
             master_array_append(ctx->clean_assembly, sub_array); // Append instructions
+        }
+        else {
+            array_free(sub_array);
+            free(str);
         }
     }
 }
