@@ -1,3 +1,10 @@
+/**
+ * @file assembler.h
+ * @author Hoyt Darnell
+ * @date 2026-06-27
+ * @brief Dynamically allocated string array and 2D master array interfaces
+ */
+
 #ifndef ASSEMBLER_H
 #define ASSEMBLER_H
 
