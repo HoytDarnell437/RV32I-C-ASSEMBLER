@@ -29,13 +29,45 @@ typedef struct {
 } asm_t;
 
 /* asm_t Associated Functions */
+
+/**
+ * @brief Initializes all members of ctx.
+ * @param ctx Pointer to the active assembler context structure.
+ * @param[in] filename Name of .asm file.
+ */
 static void asm_init(asm_t *ctx, const char *filename);
+
+/**
+ * @brief Frees all members of ctx.
+ * @param ctx Pointer to the active assembler context structure.
+ */
 static void asm_free(asm_t *ctx);
+
+/**
+ * @brief Dumps all members of ctx to build/asm_dump.txt.
+ * @param ctx Pointer to the active assembler context structure.
+ */
 static void asm_dump(asm_t *ctx);
+
+/**
+ * @brief Closes the .asm file and produces an error message.
+ * @param ctx Pointer to the active assembler context structure.
+ * @param[in] message Error message to output in terminal.
+ */
 static void asm_error(asm_t *ctx, const char *message);
 
 /* Assembly Parsing Pipeline */
+
+/**
+ * @brief Read the .asm file provided and store it in a dynamic array of type array_t.
+ * @param ctx Pointer to the active assembler context structure.
+ */
 static void read_assembly(asm_t *ctx);
+
+/**
+ * @brief Tokenize raw assembly lines into a structured 2D array.
+ * @param ctx Pointer to the active assembler context structure.
+ */
 static void format_assembly(asm_t *ctx);
 static void subroutine_gen(asm_t *ctx);
 static void isolate_instructions(asm_t *ctx);
@@ -69,13 +101,6 @@ void assemble(const char *filename) {
 
 }
 
-/**
-* @brief Read the .asm file provided and store it in a dynamic array of type array_t.
-*
-* Moves through the file appending each line to ctx->assembly.
-*
-* @param ctx Pointer to the active assembler context structure.
-*/
 static void read_assembly(asm_t *ctx) {
     ctx->file = fopen(ctx->filename, "r");
     char buffer[MAX_LINE_LENGTH];
@@ -100,14 +125,6 @@ static void read_assembly(asm_t *ctx) {
     fclose(ctx->file);
 }
 
-/**
-* @brief Tokenize raw assembly lines into a structured 2D array.
-*
-* Moves through the assembly array_t tokenizing each line into array_t of their own and appending them to clean_assembly a master_array_t type.
-* Removes comments and separates same line labels.
-*
-* @param ctx Pointer to the active assembler context structure.
-*/
 static void format_assembly(asm_t *ctx) {
     for (int i = 0; array_get(ctx->assembly, i) != NULL; i++) {
         char *str = strdup(array_get(ctx->assembly, i));
@@ -140,37 +157,26 @@ static void format_assembly(asm_t *ctx) {
     }
 }
 
-// Generates arrays of labels and their addresses
 static void subroutine_gen(asm_t *ctx) {
 
 }
 
-// Creates data initialization file
 static void create_data_file(const asm_t *ctx) {
 
 }
 
-// Isolates instructions
 static void isolate_instructions(asm_t *ctx) {
 
 }
 
-// Creates instruction initialization file
 static void create_instruction_file(const asm_t *ctx) {
 
 }
 
-// Helper functions
 static void parse_value(char *str) {
 
 }
 
-/**
-* @brief Initializes all members of ctx.
-*
-* @param ctx Pointer to the active assembler context structure.
-* @param[in] filename Name of .asm file.
-*/
 static void asm_init(asm_t *ctx, const char *filename) {
     ctx->filename = filename;
     ctx->assembly = array_create(4);
@@ -180,11 +186,6 @@ static void asm_init(asm_t *ctx, const char *filename) {
     ctx->text_table = table_create(4);
 }
 
-/**
-* @brief Frees all members of ctx.
-*
-* @param ctx Pointer to the active assembler context structure.
-*/
 static void asm_free(asm_t *ctx) {
     array_free(ctx->assembly);
     master_array_free(ctx->clean_assembly);
@@ -195,11 +196,6 @@ static void asm_free(asm_t *ctx) {
     ctx->filename = NULL;
 }
 
-/**
-* @brief Dumps all members of ctx to build/asm_dump.txt.
-*
-* @param ctx Pointer to the active assembler context structure.
-*/
 static void asm_dump(asm_t *ctx) {
     FILE *file = fopen("build/asm_dump.txt", "w");
 
@@ -228,12 +224,6 @@ static void asm_dump(asm_t *ctx) {
     fclose(file);
 }
 
-/**
-* @brief Closes the .asm file and produces an error message.
-*
-* @param ctx Pointer to the active assembler context structure.
-* @param[in] message Error message to output in terminal.
-*/
 static void asm_error(asm_t *ctx, const char *message) {
     fprintf(stderr, "Assembler Error: %s\n", message);
 
