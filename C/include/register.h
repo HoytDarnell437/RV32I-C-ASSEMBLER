@@ -1,14 +1,18 @@
-// Engineer: Hoyt Darnell
-// Institution: Georgia Institute of Technology
-// Last Updated: 06/25/2026
-// Usage: This library provides the functionality of lookup table for register values
+/**
+ * @file register.h
+ * @author Hoyt Darnell
+ * @date 2026-06-27
+ * @brief This library provides the functionality of lookup table for register values
+ */
 
 #ifndef REGISTER_H
 #define REGISTER_H
-#include "../include/table.h"
 
-
-// Public API functions
-const pair_t *register_lookup(const char *key);
+/**
+ * @brief Searches the table and returns the value associated with the key.
+ * @param key String associated with the register (x1, gp, ...).
+ * @return Returns the integer value associated with the register.
+ */
+int register_lookup(const char *key);
 
 #endif // REGISTER_H
