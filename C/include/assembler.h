@@ -2,12 +2,12 @@
 #define ASSEMBLER_H
 
 /**
-* @brief Read the .asm file provided and store it in a dynamic array of type array_t.
+* @brief Reads the .asm file provided and produces data initialization and instruction initialization files.
 *
-* Moves through the file appending each line to ctx->assembly.
 *
-* @param ctx Pointer to the active assembler context structure.
+* @param filename Pointer to the active assembler context structure.
+* @return 
 */
-int assemble(const char *);
+void assemble(const char *filename);
 
 #endif // ASSEMBLER_H
