@@ -72,7 +72,7 @@ int assemble(const char *filename){
 
     asm_free(&ctx); // Free all contents of ctx
 
-    return ASM_SUCCESS;
+    return 0;
 }
 
 /**

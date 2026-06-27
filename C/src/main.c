@@ -14,11 +14,5 @@ int main(int argc, char *argv[]){
     // assemble input file
     int assemble_out = assemble(argv[1]);
 
-    // assembler encountered issue
-    if (assemble_out == ASM_FAILURE){
-        fprintf(stderr, "Error: Assembler encountered an error\n");
-        return 1;
-    }
-
     return 0;
 }
