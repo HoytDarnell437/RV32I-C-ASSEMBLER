@@ -1,0 +1,45 @@
+\doxysection{src/\+register.c File Reference}
+\hypertarget{register_8c}{}\label{register_8c}\index{src/register.c@{src/register.c}}
+
+
+Implementation for \doxylink{register_8h}{register.\+h}.  
+
+
+{\ttfamily \+\#include $<$stdio.\+h$>$}\newline
+{\ttfamily \+\#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \+\#include $<$string.\+h$>$}\newline
+{\ttfamily \+\#include "{}../\+include/\+table.\+h"{}}\newline
+{\ttfamily \+\#include "{}../\+include/\+register.\+h"{}}\newline
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \doxymbox{\hyperlink{register_8c_aa9b7e3e6764f52f13654f6696789bc51}{register\+\_\+lookup}} (const char \texorpdfstring{$\ast$}{*}key)
+\begin{DoxyCompactList}\small\item\em Searches the table and returns the value associated with the key. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implementation for \doxylink{register_8h}{register.\+h}. 
+
+
+
+\label{register_8c_doc-func-members}
+\Hypertarget{register_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{register_8c_aa9b7e3e6764f52f13654f6696789bc51}\index{register.c@{register.c}!register\_lookup@{register\_lookup}}
+\index{register\_lookup@{register\_lookup}!register.c@{register.c}}
+\doxysubsubsection{\texorpdfstring{register\_lookup()}{register\_lookup()}}
+{\footnotesize\ttfamily \label{register_8c_aa9b7e3e6764f52f13654f6696789bc51} 
+int register\+\_\+lookup (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{key}{}\end{DoxyParamCaption})}
+
+
+
+Searches the table and returns the value associated with the key. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & String associated with the register (x1, gp, ...). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns the integer value associated with the register. 
+\end{DoxyReturn}

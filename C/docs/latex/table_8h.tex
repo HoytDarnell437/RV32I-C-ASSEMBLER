@@ -1,0 +1,139 @@
+\doxysection{include/\+table.h File Reference}
+\hypertarget{table_8h}{}\label{table_8h}\index{include/table.h@{include/table.h}}
+
+
+Linear lookup table with string keys and integer values.  
+
+
+{\ttfamily \+\#include $<$stdio.\+h$>$}\newline
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{structpair__t}{pair\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{table_8h_a52a1962d3dd3e55a400f3aa1108a0f4b}\label{table_8h_a52a1962d3dd3e55a400f3aa1108a0f4b} 
+typedef struct \doxymbox{\hyperlink{structtable__impl}{table\+\_\+impl}} \texorpdfstring{$\ast$}{*} {\bfseries table\+\_\+t}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+table\+\_\+t \doxymbox{\hyperlink{table_8h_a68117671f842ab15099b37325403aaa4}{table\+\_\+create}} (int initial\+\_\+capacity)
+\begin{DoxyCompactList}\small\item\em Creates a table\+\_\+t type. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{table_8h_a081109254a93e990699ed805b2062b1b}{table\+\_\+free}} (table\+\_\+t table)
+\begin{DoxyCompactList}\small\item\em Frees all elements of a table\+\_\+t type. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{table_8h_a667d62cc7b51cba2116a0087f2068de6}{table\+\_\+print}} (const table\+\_\+t table, FILE \texorpdfstring{$\ast$}{*}file)
+\begin{DoxyCompactList}\small\item\em Prints the contents of a table. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{table_8h_a7eeb89d434acae78b27df3c842087039}{table\+\_\+set}} (table\+\_\+t table, const char \texorpdfstring{$\ast$}{*}key, int value)
+\begin{DoxyCompactList}\small\item\em Sets the value of key in the table. \end{DoxyCompactList}\item 
+int \doxymbox{\hyperlink{table_8h_a670852bd866c785c40d31bc6ee6def57}{table\+\_\+get}} (const table\+\_\+t table, const char \texorpdfstring{$\ast$}{*}key, int \texorpdfstring{$\ast$}{*}value)
+\begin{DoxyCompactList}\small\item\em Retrieves the value of a table associated with key. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Linear lookup table with string keys and integer values. 
+
+\begin{DoxyAuthor}{Author}
+Hoyt Darnell 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+2026-\/06-\/27 
+\end{DoxyDate}
+
+
+\label{table_8h_doc-func-members}
+\Hypertarget{table_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{table_8h_a68117671f842ab15099b37325403aaa4}\index{table.h@{table.h}!table\_create@{table\_create}}
+\index{table\_create@{table\_create}!table.h@{table.h}}
+\doxysubsubsection{\texorpdfstring{table\_create()}{table\_create()}}
+{\footnotesize\ttfamily \label{table_8h_a68117671f842ab15099b37325403aaa4} 
+table\+\_\+t table\+\_\+create (\begin{DoxyParamCaption}\item[{int}]{initial\+\_\+capacity}{}\end{DoxyParamCaption})}
+
+
+
+Creates a table\+\_\+t type. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em initial\+\_\+capacity} & Initial capacity of created table. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns a pointer to the created table. 
+\end{DoxyReturn}
+\Hypertarget{table_8h_a081109254a93e990699ed805b2062b1b}\index{table.h@{table.h}!table\_free@{table\_free}}
+\index{table\_free@{table\_free}!table.h@{table.h}}
+\doxysubsubsection{\texorpdfstring{table\_free()}{table\_free()}}
+{\footnotesize\ttfamily \label{table_8h_a081109254a93e990699ed805b2062b1b} 
+void table\+\_\+free (\begin{DoxyParamCaption}\item[{table\+\_\+t}]{table}{}\end{DoxyParamCaption})}
+
+
+
+Frees all elements of a table\+\_\+t type. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em table} & Pointer to table to free. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{table_8h_a670852bd866c785c40d31bc6ee6def57}\index{table.h@{table.h}!table\_get@{table\_get}}
+\index{table\_get@{table\_get}!table.h@{table.h}}
+\doxysubsubsection{\texorpdfstring{table\_get()}{table\_get()}}
+{\footnotesize\ttfamily \label{table_8h_a670852bd866c785c40d31bc6ee6def57} 
+int table\+\_\+get (\begin{DoxyParamCaption}\item[{const table\+\_\+t}]{table}{, }\item[{const char \texorpdfstring{$\ast$}{*}}]{key}{, }\item[{int \texorpdfstring{$\ast$}{*}}]{value}{}\end{DoxyParamCaption})}
+
+
+
+Retrieves the value of a table associated with key. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em table} & Pointer to table object. \\
+\hline
+{\em key} & Key to retrieve value from the table. \\
+\hline
+{\em value} & Pointer where the retrieved value will be stored. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns 1 if key is found 0 if not 
+\end{DoxyReturn}
+\Hypertarget{table_8h_a667d62cc7b51cba2116a0087f2068de6}\index{table.h@{table.h}!table\_print@{table\_print}}
+\index{table\_print@{table\_print}!table.h@{table.h}}
+\doxysubsubsection{\texorpdfstring{table\_print()}{table\_print()}}
+{\footnotesize\ttfamily \label{table_8h_a667d62cc7b51cba2116a0087f2068de6} 
+void table\+\_\+print (\begin{DoxyParamCaption}\item[{const table\+\_\+t}]{table}{, }\item[{FILE \texorpdfstring{$\ast$}{*}}]{file}{}\end{DoxyParamCaption})}
+
+
+
+Prints the contents of a table. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em table} & Pointer to table object. \\
+\hline
+{\em file} & File to print contents to. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{table_8h_a7eeb89d434acae78b27df3c842087039}\index{table.h@{table.h}!table\_set@{table\_set}}
+\index{table\_set@{table\_set}!table.h@{table.h}}
+\doxysubsubsection{\texorpdfstring{table\_set()}{table\_set()}}
+{\footnotesize\ttfamily \label{table_8h_a7eeb89d434acae78b27df3c842087039} 
+void table\+\_\+set (\begin{DoxyParamCaption}\item[{table\+\_\+t}]{table}{, }\item[{const char \texorpdfstring{$\ast$}{*}}]{key}{, }\item[{int}]{value}{}\end{DoxyParamCaption})}
+
+
+
+Sets the value of key in the table. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em table} & Pointer to table\+\_\+t object. \\
+\hline
+{\em key} & Key of table in which the value will be changed. \\
+\hline
+{\em value} & Value to change key to be associated with. \\
+\hline
+\end{DoxyParams}

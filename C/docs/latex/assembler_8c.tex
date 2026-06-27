@@ -1,0 +1,56 @@
+\doxysection{src/\+assembler.c File Reference}
+\hypertarget{assembler_8c}{}\label{assembler_8c}\index{src/assembler.c@{src/assembler.c}}
+
+
+Implementation for \doxylink{assembler_8h}{assembler.\+h}.  
+
+
+{\ttfamily \+\#include $<$stdio.\+h$>$}\newline
+{\ttfamily \+\#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \+\#include $<$string.\+h$>$}\newline
+{\ttfamily \+\#include "{}../\+include/\+assembler.\+h"{}}\newline
+{\ttfamily \+\#include "{}../\+include/\+dynamic\+\_\+array.\+h"{}}\newline
+{\ttfamily \+\#include "{}../\+include/\+table.\+h"{}}\newline
+{\ttfamily \+\#include "{}../\+include/\+instruction.\+h"{}}\newline
+{\ttfamily \+\#include "{}../\+include/\+register.\+h"{}}\newline
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{structasm__t}{asm\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{assembler_8c_af0f2173e3b202ddf5756531b4471dcb2}\label{assembler_8c_af0f2173e3b202ddf5756531b4471dcb2} 
+\+\#define {\bfseries MAX\+\_\+\+LINE\+\_\+\+LENGTH}~512
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{assembler_8c_a7fe24c3e12ed244b02ce00baaf33b008}{assemble}} (const char \texorpdfstring{$\ast$}{*}filename)
+\begin{DoxyCompactList}\small\item\em Reads the .asm file provided and produces data initialization and instruction initialization files. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implementation for \doxylink{assembler_8h}{assembler.\+h}. 
+
+
+
+\label{assembler_8c_doc-func-members}
+\Hypertarget{assembler_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{assembler_8c_a7fe24c3e12ed244b02ce00baaf33b008}\index{assembler.c@{assembler.c}!assemble@{assemble}}
+\index{assemble@{assemble}!assembler.c@{assembler.c}}
+\doxysubsubsection{\texorpdfstring{assemble()}{assemble()}}
+{\footnotesize\ttfamily \label{assembler_8c_a7fe24c3e12ed244b02ce00baaf33b008} 
+void assemble (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{filename}{}\end{DoxyParamCaption})}
+
+
+
+Reads the .asm file provided and produces data initialization and instruction initialization files. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & String of the .asm filename. \\
+\hline
+\end{DoxyParams}
