@@ -188,11 +188,12 @@ Functions</h2></td></tr>
 <p>Appends a str to a given array_t. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">array</td><td>Array tp append to. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">array</td><td>Array to append to. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">str</td><td>String to append onto array. </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section note"><dt>Note</dt><dd>String is not directly appended a deep copy is instead appended. </dd></dl>
 
 </div>
 </div>
@@ -214,7 +215,7 @@ Functions</h2></td></tr>
 <p>Creates an array_t type. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">initial_capacity</td><td>Initial capacity of created array in bytes. </td></tr>
+    <tr><td class="paramname">initial_capacity</td><td>Initial capacity of created array. </td></tr>
   </table>
   </dd>
 </dl>
@@ -240,7 +241,7 @@ Functions</h2></td></tr>
 <p>Creates a deep copy of a given array_t. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">array</td><td>Array to create a deep copy of.</td></tr>
+    <tr><td class="paramname">array</td><td>Array to create a deep copy of. </td></tr>
   </table>
   </dd>
 </dl>
@@ -296,7 +297,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">array</td><td>Array to retrieve from. </td></tr>
-    <tr><td class="paramname">index</td><td>Index of array to retrieve from.</td></tr>
+    <tr><td class="paramname">index</td><td>Index of array to retrieve from. </td></tr>
   </table>
   </dd>
 </dl>
@@ -322,7 +323,7 @@ Functions</h2></td></tr>
 <p>Retrieves the size of array. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">array</td><td>Array to retieve size from.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">array</td><td>Array to retieve size from. </td></tr>
   </table>
   </dd>
 </dl>
@@ -348,7 +349,7 @@ Functions</h2></td></tr>
 <p>Pops the last str off of an array. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">array</td><td>Array to remove str from.</td></tr>
+    <tr><td class="paramname">array</td><td>Array to remove str from. </td></tr>
   </table>
   </dd>
 </dl>
@@ -470,7 +471,7 @@ Functions</h2></td></tr>
 <p>Creates a master_array_t type. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">initial_capacity</td><td>Initial capacity of created master array in bytes.</td></tr>
+    <tr><td class="paramname">initial_capacity</td><td>Initial capacity of created master array. </td></tr>
   </table>
   </dd>
 </dl>

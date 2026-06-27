@@ -71,11 +71,14 @@ Appends a str to a given array\+\_\+t.
 
 
 \begin{DoxyParams}[1]{Parameters}
- & {\em array} & Array tp append to. \\
+ & {\em array} & Array to append to. \\
 \hline
 \doxymbox{\texttt{in}}  & {\em str} & String to append onto array. \\
 \hline
 \end{DoxyParams}
+\begin{DoxyNote}{Note}
+String is not directly appended a deep copy is instead appended. 
+\end{DoxyNote}
 \Hypertarget{dynamic__array_8h_a9df245c69ddcbf24345d651d657b2046}\index{dynamic\_array.h@{dynamic\_array.h}!array\_create@{array\_create}}
 \index{array\_create@{array\_create}!dynamic\_array.h@{dynamic\_array.h}}
 \doxysubsubsection{\texorpdfstring{array\_create()}{array\_create()}}
@@ -88,7 +91,7 @@ Creates an array\+\_\+t type.
 
 
 \begin{DoxyParams}{Parameters}
-{\em initial\+\_\+capacity} & Initial capacity of created array in bytes. \\
+{\em initial\+\_\+capacity} & Initial capacity of created array. \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
@@ -106,7 +109,7 @@ Creates a deep copy of a given array\+\_\+t.
 
 
 \begin{DoxyParams}{Parameters}
-{\em array} & Array to create a deep copy of.\\
+{\em array} & Array to create a deep copy of. \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
@@ -141,7 +144,7 @@ Retrieves the value of array at index.
 \begin{DoxyParams}{Parameters}
 {\em array} & Array to retrieve from. \\
 \hline
-{\em index} & Index of array to retrieve from.\\
+{\em index} & Index of array to retrieve from. \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
@@ -159,7 +162,7 @@ Retrieves the size of array.
 
 
 \begin{DoxyParams}[1]{Parameters}
-\doxymbox{\texttt{in}}  & {\em array} & Array to retieve size from.\\
+\doxymbox{\texttt{in}}  & {\em array} & Array to retieve size from. \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
@@ -177,7 +180,7 @@ Pops the last str off of an array.
 
 
 \begin{DoxyParams}{Parameters}
-{\em array} & Array to remove str from.\\
+{\em array} & Array to remove str from. \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
@@ -248,7 +251,7 @@ Creates a master\+\_\+array\+\_\+t type.
 
 
 \begin{DoxyParams}{Parameters}
-{\em initial\+\_\+capacity} & Initial capacity of created master array in bytes.\\
+{\em initial\+\_\+capacity} & Initial capacity of created master array. \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}

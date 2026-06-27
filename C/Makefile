@@ -7,9 +7,9 @@ ARG := assembly/code.asm
 
 # Special targets
 .DELETE_ON_ERROR:
-.PHONY: all build run clean leak documentation
+.PHONY: all build run clean leak docs
 
-all: clean build run documentation
+all: clean build run docs
 
 # Create executable
 build: $(OUTPUT)
@@ -36,6 +36,6 @@ leak: build
 	@leaks --atExit -- ./$(OUTPUT) $(ARG)
 
 # Reproduce Doxyfile documentation
-documentation: 
+docs: 
 	@rm -rf docs
 	@doxygen Doxyfile
