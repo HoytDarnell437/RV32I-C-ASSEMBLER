@@ -1,0 +1,30 @@
+\doxysection{instruction.\+h}
+\hypertarget{instruction_8h_source}{}\label{instruction_8h_source}\index{include/instruction.h@{include/instruction.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//\ Engineer:\ Hoyt\ Darnell}}
+\DoxyCodeLine{00002\ \textcolor{comment}{//\ Institution:\ Georgia\ Institute\ of\ Technology}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//\ Last\ Updated:\ 06/25/2026}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Usage:\ This\ library\ provides\ the\ functionality\ of\ a\ linear\ lookup\ table\ consisting\ of\ instruction\ structs}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#ifndef\ INSTRUCTION\_H}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#define\ INSTRUCTION\_H}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{comment}{//\ Enum\ for\ instruction\ type}}
+\DoxyCodeLine{00010\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{enum}\ \{\ R,\ I,\ S,\ B,\ U,\ J\ \}\ instr\_type\_t;}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{comment}{//\ Struct\ for\ instructions}}
+\DoxyCodeLine{00013\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\{}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *name;}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keyword}{const}\ instr\_type\_t\ type;}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ opcode;}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ funct3;}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ funct7;}
+\DoxyCodeLine{00019\ \}\ \doxymbox{\hyperlink{structinstruction__t}{instruction\_t}};}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \textcolor{comment}{//\ Public\ API\ functions}}
+\DoxyCodeLine{00022\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{structinstruction__t}{instruction\_t}}\ *instruction\_lookup(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *name);\ \textcolor{comment}{//\ Returns\ instruction\ type\ of\ given\ instruction}}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ INSTRUCTION\_H}}
+
+\end{DoxyCode}
