@@ -12,7 +12,7 @@ int main(int argc, char *argv[]){
         return 1;
     }
     // assemble input file
-    int assemble_out = assemble(argv[1]);
+    assemble(argv[1]);
 
     return 0;
 }

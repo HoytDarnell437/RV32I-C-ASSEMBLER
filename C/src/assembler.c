@@ -32,6 +32,7 @@ typedef struct {
 } asm_t;
 
 // Core function prototypes
+
 static void read_assembly(asm_t *ctx);
 static void format_assembly(asm_t *ctx);
 static void subroutine_gen(asm_t *ctx);
@@ -57,7 +58,7 @@ static const pair_t escape_table[] = {
 };
 
 // Main function
-int assemble(const char *filename){
+void assemble(const char *filename){
     // Declare new asm_t variable and set its default values
     asm_t ctx;
     asm_init(&ctx, filename);
