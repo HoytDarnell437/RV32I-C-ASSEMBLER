@@ -14,11 +14,8 @@
 
 */
 
-
-// File macros
 #define MAX_LINE_LENGTH 512
 
-// Struct for assembler
 typedef struct {
     const char *filename;
     FILE *file;
@@ -31,25 +28,25 @@ typedef struct {
     char *instructions;
 } asm_t;
 
-// Core function prototypes
-
-static void read_assembly(asm_t *ctx);
-static void format_assembly(asm_t *ctx);
-static void subroutine_gen(asm_t *ctx);
-static void create_data_file(const asm_t *ctx);
-static void isolate_instructions(asm_t *ctx);
-static void create_instruction_file(const asm_t *ctx);
-
-// Helper function prototypes
-static void parse_value(char *str); 
-
-// asm_t member function protoypes
+/* asm_t Associated Functions */
 static void asm_init(asm_t *ctx, const char *filename);
 static void asm_free(asm_t *ctx);
 static void asm_dump(asm_t *ctx);
 static void asm_error(asm_t *ctx, const char *message);
 
-// Variables
+/* Assembly Parsing Pipeline */
+static void read_assembly(asm_t *ctx);
+static void format_assembly(asm_t *ctx);
+static void subroutine_gen(asm_t *ctx);
+static void isolate_instructions(asm_t *ctx);
+
+/* Output Generators */
+static void create_data_file(const asm_t *ctx);
+static void create_instruction_file(const asm_t *ctx);
+
+/* Helper Function */
+static void parse_value(char *str); 
+
 static const pair_t escape_table[] = {
     {"\\n",  0x0A}, {"\\t", 0x09}, {"\\r",  0x0D}, {"\\0", 0x00},
     {"\\\\", 0x5C}, {"\\'", 0x27}, {"\\\"", 0x22}, {"\\b", 0x08},
@@ -57,23 +54,19 @@ static const pair_t escape_table[] = {
     {NULL}
 };
 
-// Main function
-void assemble(const char *filename){
-    // Declare new asm_t variable and set its default values
+void assemble(const char *filename) {
     asm_t ctx;
     asm_init(&ctx, filename);
 
-    read_assembly(&ctx); // Read .asm file
-
-    format_assembly(&ctx); // Clean up the assembly
+    read_assembly(&ctx);
+    format_assembly(&ctx);
 
     // TODO 1
 
-    asm_dump(&ctx); // Dump contents of ctx to file
+    asm_dump(&ctx);
 
-    asm_free(&ctx); // Free all contents of ctx
+    asm_free(&ctx);
 
-    return 0;
 }
 
 /**
@@ -83,7 +76,7 @@ void assemble(const char *filename){
 *
 * @param ctx Pointer to the active assembler context structure.
 */
-static void read_assembly(asm_t *ctx){
+static void read_assembly(asm_t *ctx) {
     ctx->file = fopen(ctx->filename, "r");
     char buffer[MAX_LINE_LENGTH];
     size_t len;
@@ -148,32 +141,37 @@ static void format_assembly(asm_t *ctx) {
 }
 
 // Generates arrays of labels and their addresses
-static void subroutine_gen(asm_t *ctx){
+static void subroutine_gen(asm_t *ctx) {
 
 }
 
 // Creates data initialization file
-static void create_data_file(const asm_t *ctx){
+static void create_data_file(const asm_t *ctx) {
 
 }
 
 // Isolates instructions
-static void isolate_instructions(asm_t *ctx){
+static void isolate_instructions(asm_t *ctx) {
 
 }
 
 // Creates instruction initialization file
-static void create_instruction_file(const asm_t *ctx){
+static void create_instruction_file(const asm_t *ctx) {
 
 }
 
 // Helper functions
-static void parse_value(char *str){
+static void parse_value(char *str) {
 
 }
 
-// Assembler functions
-static void asm_init(asm_t *ctx, const char *filename){
+/**
+* @brief Initializes all members of ctx.
+*
+* @param ctx Pointer to the active assembler context structure.
+* @param[in] filename Name of .asm file.
+*/
+static void asm_init(asm_t *ctx, const char *filename) {
     ctx->filename = filename;
     ctx->assembly = array_create(4);
     ctx->clean_assembly = master_array_create(4);
@@ -182,36 +180,67 @@ static void asm_init(asm_t *ctx, const char *filename){
     ctx->text_table = table_create(4);
 }
 
-static void asm_free(asm_t *ctx){
-    ctx->filename = NULL;
+/**
+* @brief Frees all members of ctx.
+*
+* @param ctx Pointer to the active assembler context structure.
+*/
+static void asm_free(asm_t *ctx) {
     array_free(ctx->assembly);
     master_array_free(ctx->clean_assembly);
     table_free(ctx->const_table);
     table_free(ctx->data_table);
     table_free(ctx->text_table);
+
+    ctx->filename = NULL;
 }
 
-static void asm_dump(asm_t *ctx){
+/**
+* @brief Dumps all members of ctx to build/asm_dump.txt.
+*
+* @param ctx Pointer to the active assembler context structure.
+*/
+static void asm_dump(asm_t *ctx) {
     FILE *file = fopen("build/asm_dump.txt", "w");
+
+    if (!file) {
+        asm_error(ctx, "Error: Could not create or open build/asm_dump.txt");
+    }
+
     fprintf(file, "--- asm_t memory dump ---\n");
     fprintf(file, "Source file: %s\n", ctx->filename);
+
     fprintf(file, "\nassembly:");
     array_print(ctx->assembly, file);
+
     fprintf(file, "\nclean_assembly:");
     master_array_print(ctx->clean_assembly, file);
+
     fprintf(file, "\nconst_table:");
     table_print(ctx->const_table, file);
+
     fprintf(file, "\ndata_table:");
     table_print(ctx->data_table, file);
+
     fprintf(file, "\ntext_table:");
     table_print(ctx->text_table, file);
+
     fclose(file);
 }
 
-static void asm_error(asm_t *ctx, const char *message){
+/**
+* @brief Closes the .asm file and produces an error message.
+*
+* @param ctx Pointer to the active assembler context structure.
+* @param[in] message Error message to output in terminal.
+*/
+static void asm_error(asm_t *ctx, const char *message) {
     fprintf(stderr, "Assembler Error: %s\n", message);
-    if (ctx->file != NULL){
+
+    if (ctx->file != NULL) {
         fclose(ctx->file);
+        ctx->file = NULL;
     }
+
     exit(1);
 }
