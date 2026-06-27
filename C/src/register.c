@@ -1,14 +1,14 @@
-// Engineer: Hoyt Darnell
-// Institution: Georgia Institute of Technology
-// Implementation for register.h
+/**
+ * @file register.c
+ * @brief Implementation for register.h
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../include/table.h"
 #include "../include/register.h"
 
-
-// Initialization of register_table
 static const pair_t register_table[] = {
     {"x0", 0}, {"zero", 0}, {"x1", 1}, {"ra", 1}, {"x2", 2}, {"sp", 2}, {"x3", 3}, {"gp", 3}, {"x4", 4}, {"tp", 4}, {"x5", 5}, {"t0", 5}, {"x6", 6}, {"t1", 6}, {"x7", 7}, {"t2", 7},
     {"x8", 8}, {"fp", 8}, {"s0", 8}, {"x9", 9}, {"s1", 9}, {"x10", 10}, {"a0", 10}, {"x11", 11}, {"a1", 11}, {"x12", 12}, {"a2", 12}, {"x13", 13}, {"a3", 13}, {"x14", 14}, {"a4", 14}, {"x15", 15}, {"a5", 15},
@@ -17,15 +17,15 @@ static const pair_t register_table[] = {
     {NULL}
 };
 
-// Functions
-const pair_t *register_lookup(const char *key){
-    if (key != NULL){
-        for (int i = 0; register_table[i].key != NULL; i++){
-            if (strcmp(register_table[i].key, key) == 0){
-                return &register_table[i];
+int register_lookup(const char *key) {
+    if (key != NULL) {
+        for (int i = 0; register_table[i].key != NULL; i++) {
+            if (strcmp(register_table[i].key, key) == 0) {
+                return register_table[i].value;
             }
         }
     }
+
     fprintf(stderr, "Error: register lookup given unknown key");
     exit(1);
 }

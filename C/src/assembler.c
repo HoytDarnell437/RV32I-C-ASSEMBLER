@@ -1,3 +1,8 @@
+/**
+ * @file assembler.c
+ * @brief Implementation for assembler.h
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

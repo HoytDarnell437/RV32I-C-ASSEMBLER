@@ -1,8 +1,12 @@
-// C program to assemble riscv assembly and program a custom riscv core and monitor outputs
+/**
+ * @file main.c
+ * @author Hoyt Darnell
+ * @date 2026-06-27
+ * @brief Assemble and bitstream assembly to FPGA
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "../include/assembler.h"
 
 int main(int argc, char *argv[]) {
