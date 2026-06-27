@@ -107,7 +107,7 @@ static void format_assembly(asm_t *ctx){
 
             array_append(sub_array, tok); // Append token to sub_array
 
-            if (strchr(tok, ':') != NULL || strchr(tok, '.') != NULL){ // Separate same line labels and directives
+            if (strchr(tok, ':') != NULL){ // Separate same line labels
                 master_array_append(ctx->clean_assembly, array_dupe(sub_array)); // append label as own array
                 free(array_pop(sub_array));
             }
@@ -115,7 +115,7 @@ static void format_assembly(asm_t *ctx){
             tok = strtok(NULL, " ,()"); // Get next token
         }
 
-        if (array_get_size(sub_array) != 0 && strchr(array_get(sub_array, 0), ':') == NULL && strchr(array_get(sub_array, 0), '.') == NULL){
+        if (array_get_size(sub_array) != 0 && strchr(array_get(sub_array, 0), ':') == NULL){
             master_array_append(ctx->clean_assembly, sub_array); // Append instructions
         }
     }
