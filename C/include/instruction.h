@@ -1,15 +1,15 @@
-// Engineer: Hoyt Darnell
-// Institution: Georgia Institute of Technology
-// Last Updated: 06/25/2026
-// Usage: This library provides the functionality of a linear lookup table consisting of instruction structs
+/**
+ * @file instruction.h
+ * @author Hoyt Darnell
+ * @date 2026-06-27
+ * @brief Instruction type and table for easy lookup.
+ */
 
 #ifndef INSTRUCTION_H
 #define INSTRUCTION_H
 
-// Enum for instruction type
 typedef enum { R, I, S, B, U, J } instr_type_t;
 
-// Struct for instructions
 typedef struct {
     const char *name;
     const instr_type_t type;
@@ -18,7 +18,11 @@ typedef struct {
     const int funct7;
 } instruction_t;
 
-// Public API functions
-const instruction_t *instruction_lookup(const char *name); // Returns instruction type of given instruction
+/**
+ * @brief Returns the instruction_t of a given RV32I instruction.
+ * @param name Name of RV32I instruction.
+ * @return Returns the instruction_t of the provided instruction.
+ */
+const instruction_t *instruction_lookup(const char *name);
 
 #endif // INSTRUCTION_H
