@@ -1,0 +1,157 @@
+\begin{theindex}
+
+  \item {array\_append}
+    \subitem {dynamic\_array.c}, \hyperpage{21}
+    \subitem {dynamic\_array.h}, \hyperpage{9}
+  \item {array\_create}
+    \subitem {dynamic\_array.c}, \hyperpage{21}
+    \subitem {dynamic\_array.h}, \hyperpage{9}
+  \item {array\_dupe}
+    \subitem {dynamic\_array.c}, \hyperpage{22}
+    \subitem {dynamic\_array.h}, \hyperpage{10}
+  \item {array\_free}
+    \subitem {dynamic\_array.c}, \hyperpage{22}
+    \subitem {dynamic\_array.h}, \hyperpage{10}
+  \item {array\_get}
+    \subitem {dynamic\_array.c}, \hyperpage{22}
+    \subitem {dynamic\_array.h}, \hyperpage{10}
+  \item {array\_get\_size}
+    \subitem {dynamic\_array.c}, \hyperpage{23}
+    \subitem {dynamic\_array.h}, \hyperpage{11}
+  \item {array\_impl}, \hyperpage{5}
+  \item {array\_pop}
+    \subitem {dynamic\_array.c}, \hyperpage{23}
+    \subitem {dynamic\_array.h}, \hyperpage{11}
+  \item {array\_print}
+    \subitem {dynamic\_array.c}, \hyperpage{23}
+    \subitem {dynamic\_array.h}, \hyperpage{11}
+  \item {array\_set}
+    \subitem {dynamic\_array.c}, \hyperpage{24}
+    \subitem {dynamic\_array.h}, \hyperpage{12}
+  \item {asm\_t}, \hyperpage{5}
+  \item {assemble}
+    \subitem {assembler.c}, \hyperpage{20}
+    \subitem {assembler.h}, \hyperpage{8}
+  \item {assembler.c}
+    \subitem {assemble}, \hyperpage{20}
+  \item {assembler.h}
+    \subitem {assemble}, \hyperpage{8}
+
+  \indexspace
+
+  \item {dynamic\_array.c}
+    \subitem {array\_append}, \hyperpage{21}
+    \subitem {array\_create}, \hyperpage{21}
+    \subitem {array\_dupe}, \hyperpage{22}
+    \subitem {array\_free}, \hyperpage{22}
+    \subitem {array\_get}, \hyperpage{22}
+    \subitem {array\_get\_size}, \hyperpage{23}
+    \subitem {array\_pop}, \hyperpage{23}
+    \subitem {array\_print}, \hyperpage{23}
+    \subitem {array\_set}, \hyperpage{24}
+    \subitem {master\_array\_append}, \hyperpage{24}
+    \subitem {master\_array\_create}, \hyperpage{24}
+    \subitem {master\_array\_free}, \hyperpage{25}
+    \subitem {master\_array\_print}, \hyperpage{25}
+  \item {dynamic\_array.h}
+    \subitem {array\_append}, \hyperpage{9}
+    \subitem {array\_create}, \hyperpage{9}
+    \subitem {array\_dupe}, \hyperpage{10}
+    \subitem {array\_free}, \hyperpage{10}
+    \subitem {array\_get}, \hyperpage{10}
+    \subitem {array\_get\_size}, \hyperpage{11}
+    \subitem {array\_pop}, \hyperpage{11}
+    \subitem {array\_print}, \hyperpage{11}
+    \subitem {array\_set}, \hyperpage{12}
+    \subitem {master\_array\_append}, \hyperpage{12}
+    \subitem {master\_array\_create}, \hyperpage{12}
+    \subitem {master\_array\_free}, \hyperpage{13}
+    \subitem {master\_array\_print}, \hyperpage{13}
+
+  \indexspace
+
+  \item {include/assembler.h}, \hyperpage{7, 8}
+  \item {include/dynamic\_array.h}, \hyperpage{8}, \hyperpage{13}
+  \item {include/instruction.h}, \hyperpage{14, 15}
+  \item {include/register.h}, \hyperpage{15, 16}
+  \item {include/table.h}, \hyperpage{16}, \hyperpage{19}
+  \item {instruction.c}
+    \subitem {instruction\_lookup}, \hyperpage{26}
+  \item {instruction.h}
+    \subitem {instruction\_lookup}, \hyperpage{15}
+  \item {instruction\_lookup}
+    \subitem {instruction.c}, \hyperpage{26}
+    \subitem {instruction.h}, \hyperpage{15}
+  \item {instruction\_t}, \hyperpage{6}
+
+  \indexspace
+
+  \item {master\_array\_append}
+    \subitem {dynamic\_array.c}, \hyperpage{24}
+    \subitem {dynamic\_array.h}, \hyperpage{12}
+  \item {master\_array\_create}
+    \subitem {dynamic\_array.c}, \hyperpage{24}
+    \subitem {dynamic\_array.h}, \hyperpage{12}
+  \item {master\_array\_free}
+    \subitem {dynamic\_array.c}, \hyperpage{25}
+    \subitem {dynamic\_array.h}, \hyperpage{13}
+  \item {master\_array\_impl}, \hyperpage{6}
+  \item {master\_array\_print}
+    \subitem {dynamic\_array.c}, \hyperpage{25}
+    \subitem {dynamic\_array.h}, \hyperpage{13}
+
+  \indexspace
+
+  \item {pair\_t}, \hyperpage{6}
+
+  \indexspace
+
+  \item {register.c}
+    \subitem {register\_lookup}, \hyperpage{27}
+  \item {register.h}
+    \subitem {register\_lookup}, \hyperpage{16}
+  \item {register\_lookup}
+    \subitem {register.c}, \hyperpage{27}
+    \subitem {register.h}, \hyperpage{16}
+
+  \indexspace
+
+  \item {src/assembler.c}, \hyperpage{19}
+  \item {src/dynamic\_array.c}, \hyperpage{20}
+  \item {src/instruction.c}, \hyperpage{25}
+  \item {src/main.c}, \hyperpage{26}
+  \item {src/register.c}, \hyperpage{27}
+  \item {src/table.c}, \hyperpage{27}
+
+  \indexspace
+
+  \item {table.c}
+    \subitem {table\_create}, \hyperpage{28}
+    \subitem {table\_free}, \hyperpage{28}
+    \subitem {table\_get}, \hyperpage{29}
+    \subitem {table\_print}, \hyperpage{29}
+    \subitem {table\_set}, \hyperpage{29}
+  \item {table.h}
+    \subitem {table\_create}, \hyperpage{17}
+    \subitem {table\_free}, \hyperpage{17}
+    \subitem {table\_get}, \hyperpage{18}
+    \subitem {table\_print}, \hyperpage{18}
+    \subitem {table\_set}, \hyperpage{18}
+  \item {table\_create}
+    \subitem {table.c}, \hyperpage{28}
+    \subitem {table.h}, \hyperpage{17}
+  \item {table\_free}
+    \subitem {table.c}, \hyperpage{28}
+    \subitem {table.h}, \hyperpage{17}
+  \item {table\_get}
+    \subitem {table.c}, \hyperpage{29}
+    \subitem {table.h}, \hyperpage{18}
+  \item {table\_impl}, \hyperpage{6}
+  \item {table\_print}
+    \subitem {table.c}, \hyperpage{29}
+    \subitem {table.h}, \hyperpage{18}
+  \item {table\_set}
+    \subitem {table.c}, \hyperpage{29}
+    \subitem {table.h}, \hyperpage{18}
+
+\end{theindex}

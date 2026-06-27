@@ -9,7 +9,7 @@ ARG := assembly/code.asm
 .DELETE_ON_ERROR:
 .PHONY: all build run clean leak docs
 
-all: clean build run docs
+all: clean build run
 
 # Create executable
 build: $(OUTPUT)
@@ -35,7 +35,8 @@ leak: build
 	@echo "Checking for memory leaks"
 	@leaks --atExit -- ./$(OUTPUT) $(ARG)
 
-# Reproduce Doxyfile documentation
+# Create Doxyfile documentation
 docs: 
 	@rm -rf docs
 	@doxygen Doxyfile
+	@cd ./docs/latex && make
