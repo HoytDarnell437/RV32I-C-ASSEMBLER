@@ -10,9 +10,19 @@
 
 
 struct array_impl;
+
+/**
+ * @typedef array_t
+ * @brief Opaque handle to a dynamic array instance.
+ */
 typedef struct array_impl* array_t;
 
 struct master_array_impl;
+
+/**
+ * @typedef master_array_t
+ * @brief Opaque handle to a master array instance.
+ */
 typedef struct master_array_impl* master_array_t;
 
 /**

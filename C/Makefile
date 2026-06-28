@@ -27,7 +27,7 @@ run: build
 # Clean build directory
 clean:
 	@clear
-	@rm -rf build
+	@rm -rf build docs
 	@echo "Cleaned build directory"
 
 # Report memory leaks
