@@ -7,10 +7,14 @@
 #include <string.h>
 #include "../include/table.h"
 
+/**
+ * @struct table_impl
+ * @brief Internal implementation of the linear lookup table.
+ */
 typedef struct table_impl {
-    int capacity;
-    int size;
-    pair_t *pairs;
+    int capacity; /**< Spaces currently allocated for the table. */
+    int size;  /**< Spaces currently occupied by the table. */
+    pair_t *pairs; /**< Core array of pairs. */
 } table_impl_t;
 
 static pair_t pair_create(const char *key, int value);

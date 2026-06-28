@@ -21,16 +21,20 @@
 
 #define MAX_LINE_LENGTH 512
 
+/**
+ * @struct asm_t
+ * @brief Stores the context for the assembler.
+ */
 typedef struct {
-    const char *filename;
-    FILE *file;
-    array_t assembly;
-    master_array_t clean_assembly;
-    table_t const_table;
-    table_t data_table;
-    table_t text_table;
-    char *data_image;
-    char *instructions;
+    const char *filename; /**< Name of .asm file. */
+    FILE *file; /**< Pointer to .asm file. */
+    array_t assembly; /**< Array of the .asm file's lines. */
+    master_array_t clean_assembly; /**< 2D Master array of the .asm file's tokens with comments removed. */
+    table_t const_table; /**< Table with constant labels as the keys and their corresponding values. */
+    table_t data_table; /**< Table with the data labels as the keys and their corresponding values. */
+    table_t text_table; /**< Table with the text labels as the keys and their corresponding values. */
+    char *data_image; /**< Array of data initialization contents. */
+    char *instructions; /**< Array of instructions. */
 } asm_t;
 
 /* asm_t Associated Functions */

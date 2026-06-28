@@ -8,6 +8,10 @@
 #include <string.h>
 #include "../include/instruction.h"
 
+/**
+ * @brief Static lookup table containing the RV32I instruction set architecture.
+ * @note Sorted by instruction type; terminated with a '{NULL}' sentinel entry.
+ */
 static const instruction_t instruction_table[] = {
 
     {"lui", U, 0x37, -1, -1}, {"auipc", U, 0x17, -1, -1},

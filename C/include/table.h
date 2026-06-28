@@ -10,12 +10,21 @@
 
 #include <stdio.h>
 
+/**
+ * @struct pair_t
+ * @brief Key value pair.
+ */
 typedef struct {
-    char *key;
-    int value; 
+    char *key; /**< Key used to index value. */
+    int value;  /**< Value associated with key. */
 } pair_t;
 
 struct table_impl;
+
+/**
+ * @typedef table_t
+ * @brief Opaque handle to a table instance.
+ */
 typedef struct table_impl* table_t;
 
 /**
