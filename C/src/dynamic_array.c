@@ -8,16 +8,24 @@
 #include <string.h>
 #include "../include/dynamic_array.h"
 
+/**
+ * @struct array_impl
+ * @brief Internal implementation of the dynamic array.
+ */
 typedef struct array_impl {
-    int capacity;
-    int size;
-    char **data;
+    int capacity; /**< Spaces currently allocated for the dynamic array. */
+    int size; /**< Spaces currently occupied by the dynamic array. */
+    char **data; /**< Core array of the dynamic array. */
 } array_impl_t;
 
+/**
+ * @struct master_array_impl
+ * @brief Internal implementation of the master array.
+ */
 typedef struct master_array_impl {
-    int capacity;
-    int size;
-    array_t *arrays;
+    int capacity; /**< Spaces currently allocated for the master array. */
+    int size; /**< Spaces currently occupied by the master array. */
+    array_t *arrays; /**< Core array of the master array. */
 } master_array_impl_t;
 
 array_t array_create(int initial_capacity) {
