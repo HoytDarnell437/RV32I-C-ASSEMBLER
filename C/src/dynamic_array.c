@@ -173,6 +173,15 @@ void master_array_print(master_array_t master, FILE *file) {
     }
 }
 
+array_t master_array_get(const master_array_t master, int index) {
+    if (index < 0 || index >= master->size) {
+        fprintf(stderr, "Error: function master_array_get out of bounds\n");
+        exit(1);
+    }
+
+    return master->arrays[index];
+}
+
 int master_array_get_size(const master_array_t master) {
     return master->size;
 }
