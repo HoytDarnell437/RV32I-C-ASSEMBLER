@@ -185,7 +185,7 @@ static void subroutine_gen(asm_t *ctx) {
     int data_counter = 2048;
 
     for (int i = 0; i < master_array_get_size(ctx->clean_assembly); i++) {
-        if(master_array_get())
+        if(master_array_get(ctx->clean_assembly, i))
     }
 }
 
