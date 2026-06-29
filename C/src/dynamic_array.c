@@ -172,3 +172,7 @@ void master_array_print(master_array_t master, FILE *file) {
         }
     }
 }
+
+int master_array_get_size(const master_array_t master) {
+    return master->size;
+}

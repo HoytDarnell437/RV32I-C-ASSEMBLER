@@ -16,7 +16,7 @@
 
 --- TODO List ---
 1. Implement Remaining Functions
-
+2. Rewrite doxygen comments to be concise
 */
 
 #define MAX_LINE_LENGTH 512
@@ -30,9 +30,9 @@ typedef struct {
     FILE *file; /**< Pointer to .asm file. */
     array_t assembly; /**< Array of the .asm file's lines. */
     master_array_t clean_assembly; /**< 2D Master array of the .asm file's tokens with comments removed. */
+    table_t data_table; /**< Table with the data labels as keys and their addresses as corresponding values. */
+    table_t text_table; /**< Table with the text labels as keys and their addresses as corresponding values. */
     table_t const_table; /**< Table with constant labels as the keys and their corresponding values. */
-    table_t data_table; /**< Table with the data labels as the keys and their corresponding values. */
-    table_t text_table; /**< Table with the text labels as the keys and their corresponding values. */
     char *data_image; /**< Array of data initialization contents. */
     char *instructions; /**< Array of instructions. */
 } asm_t;
@@ -101,6 +101,7 @@ void assemble(const char *filename) {
 
     read_assembly(&ctx);
     format_assembly(&ctx);
+    subroutine_gen(&ctx);
 
     // TODO 1
 
@@ -167,7 +168,17 @@ static void format_assembly(asm_t *ctx) {
 }
 
 static void subroutine_gen(asm_t *ctx) {
+    ctx->data_table = table_create(4);
+    ctx->text_table = table_create(4);
+    ctx->const_table = table_create(4);
+    //data_image
+    char *directive = ".text";
+    int text_counter = 0;
+    int data_counter = 2048;
 
+    for (int i = 0; i < master) {
+
+    }
 }
 
 static void create_data_file(const asm_t *ctx) {

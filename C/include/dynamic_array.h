@@ -117,4 +117,11 @@ char *array_get(const array_t array, int index);
  */
 int array_get_size(const array_t array);
 
+/**
+ * @brief Retrieves the size of master array.
+ * @param[in] master Master array to retieve size from. 
+ * @return Size of master array.
+ */
+int master_array_get_size(const master_array_t master);
+
 #endif // DYNAMIC_ARRAY_H
