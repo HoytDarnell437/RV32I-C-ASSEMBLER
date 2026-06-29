@@ -118,6 +118,14 @@ char *array_get(const array_t array, int index);
 int array_get_size(const array_t array);
 
 /**
+ * @brief Retrieves the value of array at index.
+ * @param master Master array to retrieve from.
+ * @param index Index of master array to retrieve from.
+ * @return Requested array.
+ */
+array_t master_array_get(const master_array_t master, int index);
+
+/**
  * @brief Retrieves the size of master array.
  * @param[in] master Master array to retieve size from. 
  * @return Size of master array.
