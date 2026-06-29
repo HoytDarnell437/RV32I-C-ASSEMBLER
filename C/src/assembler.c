@@ -75,6 +75,7 @@ static void read_assembly(asm_t *ctx);
 
 /**
  * @brief Tokenize raw assembly lines into a structured 2D array.
+ * Separates lines into separate tokens, removes comments, separates same line labels, and forces lowercase letters.
  * @param ctx Pointer to the active assembler context structure.
  */
 static void format_assembly(asm_t *ctx);
@@ -146,6 +147,12 @@ static void format_assembly(asm_t *ctx) {
                 break;
             }
 
+            for (int j = 0; tok[j] != '\0'; j++) {
+                if (tok[j] < 91 && tok[j] > 64) {
+                    tok[j] += 32;
+                }
+            }
+
             // Note: array_append handles deep-copying internally via strdup
             array_append(sub_array, tok);
 
@@ -172,12 +179,13 @@ static void subroutine_gen(asm_t *ctx) {
     ctx->text_table = table_create(4);
     ctx->const_table = table_create(4);
     //data_image
+
     char *directive = ".text";
     int text_counter = 0;
     int data_counter = 2048;
 
-    for (int i = 0; i < master) {
-
+    for (int i = 0; i < master_array_get_size(ctx->clean_assembly); i++) {
+        
     }
 }
 
