@@ -79,6 +79,7 @@ static void read_assembly(asm_t *ctx);
  * @param ctx Pointer to the active assembler context structure.
  */
 static void format_assembly(asm_t *ctx);
+
 static void subroutine_gen(asm_t *ctx);
 static void isolate_instructions(asm_t *ctx);
 
@@ -87,7 +88,19 @@ static void create_data_file(const asm_t *ctx);
 static void create_instruction_file(const asm_t *ctx);
 
 /* Helper Function */
-static void parse_value(char *str); 
+/**
+ * @brief Convert strings into their ascii values.
+ * @param str String to parse the value of.
+ */
+static void parse_value(const char *str); 
+/**
+ * @brief Copy a string starting at one index and ending on another (inclusive).
+ * @param str String to copy from.
+ * @param start Index to start on.
+ * @param end Index to end on (inclusive).
+ * @param dest String to copy to.
+ */
+static void get_substring(const char *str, int start, int end, char *dest);
 
 static const pair_t escape_table[] = {
     {"\\n",  0x0A}, {"\\t", 0x09}, {"\\r",  0x0D}, {"\\0", 0x00},
@@ -166,6 +179,10 @@ static void format_assembly(asm_t *ctx) {
 
         if (array_get_size(sub_array) != 0 && strchr(array_get(sub_array, 0), ':') == NULL) {
             master_array_append(ctx->clean_assembly, sub_array);
+            printf("first token: %s\n",array_get(sub_array,0));
+            char dest[10];
+            get_substring(array_get(sub_array,0), 0, 3, dest);
+            printf("%s\n",dest);
         } else {
             array_free(sub_array);
         }
@@ -185,7 +202,19 @@ static void subroutine_gen(asm_t *ctx) {
     int data_counter = 2048;
 
     for (int i = 0; i < master_array_get_size(ctx->clean_assembly); i++) {
-        if(master_array_get(ctx->clean_assembly, i))
+        array_t line = master_array_get(ctx->clean_assembly, i);
+        char *string = array_get(line, 0);
+
+        if (strcmp(string, ".text") == 0) {
+            directive = ".text";
+        } else if (strcmp(string, ".data") == 0) {
+            directive = ".data";
+        } else if (strcmp(string, ".word") == 0) {
+            for (int j = 1; j < array_get_size(line); j++) {
+                char *tok = array_get(line, j);
+
+            }
+        }
     }
 }
 
@@ -201,8 +230,24 @@ static void create_instruction_file(const asm_t *ctx) {
 
 }
 
-static void parse_value(char *str) {
+static void parse_value(const char *str) {
+    if (str[0] == '\'' && str[strlen(str) - 1] == '\'') {
+        
+    }
+}
 
+static void get_substring(const char *str, int start, int end, char *dest) {
+    int length = end + 1 - start;
+
+    if (length < 1 || end > strlen(str)-1) {
+        fprintf(stderr, "Error: function get_substring either recieved an end before a start or an end past the length of str.\n");
+        return;
+    }
+
+    strncpy(dest, str + start, length);
+    dest[length] = '\0';
+
+    return;
 }
 
 static void asm_init(asm_t *ctx, const char *filename) {

@@ -3,8 +3,7 @@
                 # Designer: Hoyt Darnell
                 # Date: May 7th, 2026
                 
-.text
-                
+.text         
                 # load immediates
                 li s10, 2049
                 
