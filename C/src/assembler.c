@@ -180,8 +180,9 @@ static void format_assembly(asm_t *ctx) {
         if (array_get_size(sub_array) != 0 && strchr(array_get(sub_array, 0), ':') == NULL) {
             master_array_append(ctx->clean_assembly, sub_array);
             printf("first token: %s\n",array_get(sub_array,0));
-            char dest[2];
-            get_substring(array_get(sub_array,0), 0, 4, dest);
+            char dest[10];
+            get_substring(array_get(sub_array,0), 0, 3, dest);
+            printf("%s\n",dest);
         } else {
             array_free(sub_array);
         }
@@ -236,15 +237,15 @@ static void parse_value(const char *str) {
 }
 
 static void get_substring(const char *str, int start, int end, char *dest) {
-    int length = end - start;
+    int length = end + 1 - start;
 
-    if (length < 1 || end > strlen(str)) {
+    if (length < 1 || end > strlen(str)-1) {
         fprintf(stderr, "Error: function get_substring either recieved an end before a start or an end past the length of str.\n");
         return;
     }
 
-    strncpy(dest, str + start, length + 1);
-    dest[length + 1] = '\0';
+    strncpy(dest, str + start, length);
+    dest[length] = '\0';
 
     return;
 }
