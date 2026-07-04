@@ -3,38 +3,43 @@
  * @brief Implementation for dynamic_array.h
  */
 
+#include "../include/dynamic_array.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/dynamic_array.h"
 
 /**
- * @struct array_impl
+ * @struct char_array_impl
  * @brief Internal implementation of the dynamic array.
  */
-typedef struct array_impl {
+typedef struct char_array_impl {
     int capacity; /**< Spaces currently allocated for the dynamic array. */
-    int size; /**< Spaces currently occupied by the dynamic array. */
-    char **data; /**< Core array of the dynamic array. */
-} array_impl_t;
+    int size;     /**< Spaces currently occupied by the dynamic array. */
+    char **data;  /**< Core array of the dynamic array. */
+} char_array_impl_t;
 
 /**
  * @struct master_array_impl
  * @brief Internal implementation of the master array.
  */
 typedef struct master_array_impl {
-    int capacity; /**< Spaces currently allocated for the master array. */
-    int size; /**< Spaces currently occupied by the master array. */
-    array_t *arrays; /**< Core array of the master array. */
+    int capacity;         /**< Spaces currently allocated for the master array. */
+    int size;             /**< Spaces currently occupied by the master array. */
+    char_array_t *arrays; /**< Core array of the master array. */
 } master_array_impl_t;
 
-array_t array_create(int initial_capacity) {
+char_array_t char_array_create(int initial_capacity) {
     if (initial_capacity <= 0) {
         fprintf(stderr, "Error: array_create received initial_capacity less than 1\n");
         exit(1);
     }
 
-    array_t array = malloc(sizeof(array_impl_t));
+    char_array_t array = malloc(sizeof(char_array_impl_t));
+
+    if (array == NULL) {
+        fprintf(stderr, "Error: Memory allocation failed for char_array\n");
+        exit(1);
+    }
 
     array->capacity = initial_capacity;
     array->size = 0;
@@ -43,17 +48,17 @@ array_t array_create(int initial_capacity) {
     return array;
 }
 
-array_t array_dupe(array_t array) {
-    array_t copy = array_create(array->capacity);
+char_array_t char_array_dupe(char_array_t array) {
+    char_array_t copy = char_array_create(array->capacity);
 
     for (int i = 0; i < array->size; i++) {
-        array_append(copy, array->data[i]);
+        char_array_append(copy, array->data[i]);
     }
 
     return copy;
 }
 
-void array_append(array_t array, const char *str) {
+void char_array_append(char_array_t array, const char *str) {
     if (array->size == array->capacity) {
         array->capacity *= 2;
         array->data = realloc(array->data, array->capacity * sizeof(char *));
@@ -68,8 +73,9 @@ void array_append(array_t array, const char *str) {
     array->size++;
 }
 
-char *array_pop(array_t array) {
-    if(array->size < 1) return NULL;
+char *char_array_pop(char_array_t array) {
+    if (array->size < 1)
+        return NULL;
 
     char *copy = array->data[array->size - 1];
     array->data[array->size - 1] = NULL;
@@ -78,7 +84,7 @@ char *array_pop(array_t array) {
     return copy;
 }
 
-void array_free(array_t array) {
+void char_array_free(char_array_t array) {
     for (int i = 0; i < array->size; i++) {
         free(array->data[i]);
     }
@@ -87,7 +93,7 @@ void array_free(array_t array) {
     free(array);
 }
 
-void array_print(const array_t array, FILE *file) {
+void char_array_print(const char_array_t array, FILE *file) {
     fprintf(file, "\n--- Printing contents of dynamic array (Size: %d  / Capacity: %d) ---\n", array->size, array->capacity);
 
     for (int i = 0; i < array->size; i++) {
@@ -95,7 +101,7 @@ void array_print(const array_t array, FILE *file) {
     }
 }
 
-void array_set(array_t array, const char *str, int index) {
+void char_array_set(char_array_t array, const char *str, int index) {
     if (index < 0 || index >= array->size) {
         fprintf(stderr, "Error: function array_set out of bounds\n");
         exit(1);
@@ -110,7 +116,7 @@ void array_set(array_t array, const char *str, int index) {
     }
 }
 
-char *array_get(const array_t array, int index) {
+char *char_array_get(const char_array_t array, int index) {
     if (index < 0 || index >= array->size) {
         fprintf(stderr, "Error: function array_get out of bounds\n");
         exit(1);
@@ -119,32 +125,37 @@ char *array_get(const array_t array, int index) {
     return array->data[index];
 }
 
-int array_get_size(const array_t array) {
-    return array->size;
-}
+int char_array_get_size(const char_array_t array) { return array->size; }
 
 // Master array functions
-master_array_t master_array_create(int initial_capacity) {
+master_char_array_t master_array_create(int initial_capacity) {
     if (initial_capacity <= 0) {
         fprintf(stderr, "Error: master_array_create received initial_capacity less than 1\n");
         exit(1);
     }
 
-    master_array_t master = malloc(sizeof(master_array_impl_t));
+    master_char_array_t master = malloc(sizeof(master_array_impl_t));
+
+    if (master == NULL) {
+        fprintf(stderr, "Error: Memory allocation failed for master array\n");
+        exit(1);
+    }
 
     master->capacity = initial_capacity;
     master->size = 0;
-    master->arrays = malloc(master->capacity * sizeof(array_t));
+    master->arrays = malloc(master->capacity * sizeof(char_array_t));
 
     return master;
 }
 
-void master_array_append(master_array_t master, array_t sub_array) {
-    if (sub_array == NULL) return;
+void master_array_append(master_char_array_t master, char_array_t sub_array) {
+    if (sub_array == NULL) {
+        return;
+    }
 
     if (master->size == master->capacity) {
         master->capacity *= 2;
-        array_t *new_arrays = realloc(master->arrays, master->capacity * sizeof(array_t));
+        char_array_t *new_arrays = realloc(master->arrays, master->capacity * sizeof(char_array_t));
         master->arrays = new_arrays;
     }
 
@@ -152,16 +163,16 @@ void master_array_append(master_array_t master, array_t sub_array) {
     master->size++;
 }
 
-void master_array_free(master_array_t master) {
+void master_array_free(master_char_array_t master) {
     for (int i = 0; i < master->size; i++) {
-            array_free(master->arrays[i]);
-        }
+        char_array_free(master->arrays[i]);
+    }
 
-        free(master->arrays);
-        free(master);
+    free(master->arrays);
+    free(master);
 }
 
-void master_array_print(master_array_t master, FILE *file) {
+void master_array_print(master_char_array_t master, FILE *file) {
     fprintf(file, "\n--- Printing contents of master array (Size: %d  / Capacity: %d) ---\n", master->size, master->capacity);
 
     for (int i = 0; i < master->size; i++) {
@@ -173,7 +184,7 @@ void master_array_print(master_array_t master, FILE *file) {
     }
 }
 
-array_t master_array_get(const master_array_t master, int index) {
+char_array_t master_array_get(const master_char_array_t master, int index) {
     if (index < 0 || index >= master->size) {
         fprintf(stderr, "Error: function master_array_get out of bounds\n");
         exit(1);
@@ -182,6 +193,6 @@ array_t master_array_get(const master_array_t master, int index) {
     return master->arrays[index];
 }
 
-int master_array_get_size(const master_array_t master) {
+int master_array_get_size(const master_char_array_t master) {
     return master->size;
 }
