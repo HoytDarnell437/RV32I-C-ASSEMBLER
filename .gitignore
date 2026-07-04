@@ -7,6 +7,10 @@
 *.obj
 *.elf
 
+# Output directories
+build/
+docs/
+
 # Linker output
 *.ilk
 *.map
