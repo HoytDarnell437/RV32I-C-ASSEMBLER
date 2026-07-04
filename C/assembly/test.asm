@@ -1,7 +1,9 @@
 .data
-        
+        .word 'hi'
+
 .TEXT 
         aDd x1, X2, x3
+
 help:   sub x3, x4, x5
         lw x2, 5(x1)
 SON:
