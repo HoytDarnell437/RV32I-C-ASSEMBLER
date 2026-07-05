@@ -35,6 +35,13 @@ leak: build
 	@echo "Checking for memory leaks"
 	@leaks --atExit -- ./$(OUTPUT) $(ARG)
 
+debug: $(SRC)
+	@rm -rf build
+	@mkdir -p build
+	@clang $(CFLAGS) -g $(SRC) -o $(OUTPUT)
+	@echo "Produced program debugging executable"
+	
+
 # Create Doxyfile documentation
 docs: 
 	@rm -rf docs
