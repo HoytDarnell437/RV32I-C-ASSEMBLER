@@ -14,9 +14,17 @@ struct char_array_impl;
 
 /**
  * @typedef char_array_t
- * @brief Opaque handle to a dynamic array of character arrays instance.
+ * @brief Opaque handle to a dynamic array of character arrays.
  */
-typedef struct char_array_impl* char_array_t;
+typedef struct char_array_impl *char_array_t;
+
+struct int_array_impl;
+
+/**
+ * @typedef int_array_t
+ * @brief Opaque handle to a dynamic array of integers.
+ */
+typedef struct int_array_impl *int_array_t;
 
 struct master_array_impl;
 
@@ -24,10 +32,10 @@ struct master_array_impl;
  * @typedef master_char_array_t
  * @brief Opaque handle to a master array instance.
  */
-typedef struct master_array_impl* master_char_array_t;
+typedef struct master_array_impl *master_char_array_t;
 
 /**
- * @brief Creates an array_t type.
+ * @brief Creates a char_array_t type.
  * @param initial_capacity Initial capacity of created array.
  * @return Returns a pointer to the created dynamic array.
  */
@@ -48,14 +56,14 @@ char_array_t char_array_dupe(char_array_t array);
  */
 void char_array_append(char_array_t array, const char *str);
 
-/** 
+/**
  * @brief Pops the last str off of an array.
  * @param array Array to remove str from.
  * @return Returns the popped string.
  */
 char *char_array_pop(char_array_t array);
 
-/** 
+/**
  * @brief Frees all elements in the given array.
  * @param array Array to free.
  */
@@ -67,6 +75,40 @@ void char_array_free(char_array_t array);
  * @param file File to print to.
  */
 void char_array_print(char_array_t array, FILE *file);
+
+/**
+ * @brief Creates a int_array_t type.
+ * @param initial_capacity Initial capacity of created integer array.
+ * @return Returns a pointer to the created dynamic integer array.
+ */
+int_array_t int_array_create(int initial_capacity);
+
+/**
+ * @brief Creates a deep copy of a given int_array_t.
+ * @param array The int_array_t to create a deep copy of.
+ * @return Returns a pointer to the deep copy of the int_array_t.
+ */
+int_array_t int_array_dupe(int_array_t array);
+
+/**
+ * @brief Appends a str to a given int_array_t.
+ * @param array The int_array_t to append to.
+ * @param[in] num Integer to append onto int_array_t.
+ */
+void int_array_append(int_array_t array, int num);
+
+/**
+ * @brief Frees all elements in an int_array_t.
+ * @param array int_array_t to free.
+ */
+void int_array_free(int_array_t array);
+
+/**
+ * @brief Prints the contents of an int_array_t.
+ * @param array The int_array_t to print.
+ * @param file The file to print to.
+ */
+void int_array_print(int_array_t array, FILE *file);
 
 /**
  * @brief Creates a master_char_array_t type.
@@ -113,7 +155,7 @@ char *char_array_get(const char_array_t array, int index);
 
 /**
  * @brief Retrieves the size of array.
- * @param[in] array Array to retieve size from. 
+ * @param[in] array Array to retieve size from.
  * @return Size of array.
  */
 int char_array_get_size(const char_array_t array);
@@ -128,7 +170,7 @@ char_array_t master_array_get(const master_char_array_t master, int index);
 
 /**
  * @brief Retrieves the size of master array.
- * @param[in] master Master array to retieve size from. 
+ * @param[in] master Master array to retieve size from.
  * @return Size of master array.
  */
 int master_array_get_size(const master_char_array_t master);
