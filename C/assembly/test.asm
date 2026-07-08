@@ -1,5 +1,5 @@
 .data
-        .word 'hi'
+        .byte 'H' 'e' 'l' 'l' 'o' ' ' 'W' 'o' 'r' 'l' 'd' '!' 0
 
 .TEXT 
         aDd x1, X2, x3
