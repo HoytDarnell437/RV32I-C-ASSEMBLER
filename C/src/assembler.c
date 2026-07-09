@@ -93,7 +93,7 @@ static void create_instruction_file(const asm_t *ctx);
  * @brief Convert strings into their ascii values.
  * @param str String to parse the value of.
  */
-static void parse_value(const char *str); 
+static int parse_value(const char *str);
 /**
  * @brief Copy a string starting at one index and ending on another (inclusive).
  * @param str String to copy from.
@@ -102,13 +102,6 @@ static void parse_value(const char *str);
  * @param dest String to copy to.
  */
 static void get_substring(const char *str, int start, int end, char *dest);
-
-static const pair_t escape_table[] = {
-    {"\\n",  0x0A}, {"\\t", 0x09}, {"\\r",  0x0D}, {"\\0", 0x00},
-    {"\\\\", 0x5C}, {"\\'", 0x27}, {"\\\"", 0x22}, {"\\b", 0x08},
-    {"\\f",  0x0C}, {"\\a", 0x07}, {"\\v",  0x0B},
-    {NULL}
-};
 
 void assemble(const char *filename) {
     asm_t ctx;
@@ -129,7 +122,6 @@ void assemble(const char *filename) {
 static void read_assembly(asm_t *ctx) {
     ctx->file = fopen(ctx->filename, "r");
     char buffer[MAX_LINE_LENGTH];
-    size_t len;
 
     if (!ctx->file) {
         asm_error(ctx, "Error: Could not open .asm file");
@@ -213,8 +205,9 @@ static void subroutine_gen(asm_t *ctx) {
             directive = ".data";
         } else if (strcmp(string, ".word") == 0) {
             for (int j = 1; j < char_array_get_size(line); j++) {
-                char *tok = char_array_get(line, j);
-                parse_value(tok);
+                const char *tok = char_array_get(line, j);
+                int value = parse_value(tok);
+                printf("Parsed Value .word: %d\n", value);
             }
         }
     }
@@ -226,22 +219,23 @@ static void create_data_file(const asm_t *ctx) {
 
 static void isolate_instructions(asm_t *ctx) {
 
-}
-
-static void create_instruction_file(const asm_t *ctx) {
-
-}
-
-static void parse_value(const char *str) {
-    if (str[0] == '\'' && str[strlen(str) - 1] == '\'') {
-        
+static int parse_value(const char *str) {
+    if ((str[0] == '\'' && str[strlen(str) - 1] == '\'') || (str[0] == '"' && str[strlen(str) - 1] == '"')) {
+        return str[1];
     }
+    
+    int value = 0;
+
+    for (int i = 0; str[i] != '\0'; i++) {
+        value += ((int) str[i]-48) * pow(10, i);
+    }
+    return value;
 }
 
 static void get_substring(const char *str, int start, int end, char *dest) {
     int length = end + 1 - start;
 
-    if (length < 1 || end > strlen(str)-1) {
+    if (length < 1 || end > strlen(str) - 1) {
         fprintf(stderr, "Error: function get_substring either recieved an end before a start or an end past the length of str.\n");
         return;
     }
