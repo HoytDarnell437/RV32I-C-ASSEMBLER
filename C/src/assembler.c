@@ -68,8 +68,7 @@ static void asm_error(asm_t *ctx, const char *message);
 /* Assembly Parsing Pipeline */
 
 /**
- * @brief Read the .asm file provided and store it in a dynamic array of type
- * char_array_t.
+ * @brief Read the .asm file provided and store it in a dynamic array of type char_array_t.
  * @param ctx Pointer to the active assembler context structure.
  */
 static void read_assembly(asm_t *ctx);
@@ -94,6 +93,19 @@ static void create_instruction_file(const asm_t *ctx);
  * @param str String to parse the value of.
  */
 static int parse_value(const char *str);
+
+/**
+ * @brief Convert strings of decimal numbers into integers.
+ * @param str String to convert.
+ */
+static int dec_str_int(const char *str);
+
+/**
+ * @brief Convert strings of hexadecimal numbers into integers.
+ * @param str String to convert.
+ */
+static int hex_str_int(const char *str);
+
 /**
  * @brief Copy a string starting at one index and ending on another (inclusive).
  * @param str String to copy from.
@@ -116,7 +128,6 @@ void assemble(const char *filename) {
     asm_dump(&ctx);
 
     asm_free(&ctx);
-
 }
 
 static void read_assembly(asm_t *ctx) {
@@ -220,15 +231,66 @@ static void create_data_file(const asm_t *ctx) {
 static void isolate_instructions(asm_t *ctx) {
 
 static int parse_value(const char *str) {
-    if ((str[0] == '\'' && str[strlen(str) - 1] == '\'') || (str[0] == '"' && str[strlen(str) - 1] == '"')) {
+    if (strlen(str) < 2) {
+        fprintf(stderr, "Error: Impropper input to parse_value function: NULL or Empty str\n");
+        return (0);
+    }
+
+    if (str[0] == '\'' && str[strlen(str) - 1] == '\'') {
         return str[1];
     }
-    
+
     int value = 0;
 
-    for (int i = 0; str[i] != '\0'; i++) {
-        value += ((int) str[i]-48) * pow(10, i);
+    if (str[0] == '0' && str[1] == 'x') {
+        if (str[2] == '\0') {
+            fprintf(stderr, "Error: Empty hex constant given to parse_value function \"0x\"\n");
+        }
+
+        value = hex_str_int(str);
+
+    } else {
+        value = dec_str_int(str);
     }
+
+    return value;
+}
+
+static int dec_str_int(const char *str) {
+    int value = 0;
+    int negative = 0;
+    int i = 0;
+
+    if (str[0] == '-') {
+        negative = 1;
+        i++;
+    }
+
+    do {
+        value *= 10;
+        value += ((int)str[i] - 48);
+    } while (str[++i] != '\0');
+
+    if (negative) {
+        value = -value;
+    }
+
+    return value;
+}
+
+static int hex_str_int(const char *str) {
+    int value = 0;
+    int i = 2;
+
+    do {
+        value *= 16;
+        if (str[i] < 58) {
+            value += ((int)str[i] - 48);
+        } else {
+            value += ((int)str[i] - 87);
+        }
+    } while (str[++i] != '\0');
+
     return value;
 }
 
@@ -253,6 +315,7 @@ static void asm_init(asm_t *ctx, const char *filename) {
     ctx->const_table = table_create(4);
     ctx->data_table = table_create(4);
     ctx->text_table = table_create(4);
+    ctx->data_image = int_array_create(4);
 }
 
 static void asm_free(asm_t *ctx) {
