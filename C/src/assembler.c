@@ -3,9 +3,11 @@
  * @brief Implementation for assembler.h
  */
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "../include/assembler.h"
 #include "../include/dynamic_array.h"
 #include "../include/table.h"
@@ -87,7 +89,7 @@ static void isolate_instructions(asm_t *ctx);
 static void create_data_file(const asm_t *ctx);
 static void create_instruction_file(const asm_t *ctx);
 
-/* Helper Function */
+/* Helper Functions */
 /**
  * @brief Convert strings into their ascii values.
  * @param str String to parse the value of.
@@ -139,7 +141,7 @@ static void read_assembly(asm_t *ctx) {
     }
 
     while (fgets(buffer, sizeof(buffer), ctx->file) != NULL) {
-        len = strlen(buffer);
+        size_t len = strlen(buffer);
 
         if (len == sizeof(buffer) - 1 && buffer[len - 1] != '\n' && !feof(ctx->file)) {
             asm_error(ctx, "Error: Line in assembly file exceeds MAX_LINE_LENGTH");
@@ -184,10 +186,6 @@ static void format_assembly(asm_t *ctx) {
         if (char_array_get_size(sub_array) != 0 &&
             strchr(char_array_get(sub_array, 0), ':') == NULL) {
             master_array_append(ctx->clean_assembly, sub_array);
-            printf("first token: %s\n",array_get(sub_array,0));
-            char dest[10];
-            get_substring(array_get(sub_array,0), 0, 3, dest);
-            printf("%s\n",dest);
         } else {
             char_array_free(sub_array);
         }
@@ -197,11 +195,6 @@ static void format_assembly(asm_t *ctx) {
 }
 
 static void subroutine_gen(asm_t *ctx) {
-    ctx->data_table = table_create(4);
-    ctx->text_table = table_create(4);
-    ctx->const_table = table_create(4);
-    //data_image
-
     char *directive = ".text";
     int text_counter = 0;
     int data_counter = 2048;
@@ -224,14 +217,14 @@ static void subroutine_gen(asm_t *ctx) {
     }
 }
 
-static void create_data_file(const asm_t *ctx) {
+static void create_data_file(const asm_t *ctx) {}
 
-}
+static void isolate_instructions(asm_t *ctx) {}
 
-static void isolate_instructions(asm_t *ctx) {
+static void create_instruction_file(const asm_t *ctx) {}
 
 static int parse_value(const char *str) {
-    if (strlen(str) < 2) {
+    if (strlen(str) < 1) {
         fprintf(stderr, "Error: Impropper input to parse_value function: NULL or Empty str\n");
         return (0);
     }
