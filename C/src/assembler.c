@@ -167,13 +167,21 @@ static void format_assembly(asm_t *ctx) {
             }
 
             for (int j = 0; tok[j] != '\0'; j++) {
+                if (tok[j] == '\'') {
+                    break;
+                }
                 if (tok[j] < 91 && tok[j] > 64) {
                     tok[j] += 32;
                 }
             }
 
-            // Note: array_append handles deep-copying internally via strdup
-            char_array_append(sub_array, tok);
+            if (strcmp(tok, "'") == 0) {
+                char_array_append(sub_array, "' '");
+                tok = strtok(NULL, " ,()");
+            } else {
+                // Note: array_append handles deep-copying internally via strdup
+                char_array_append(sub_array, tok);
+            }
 
             if (strchr(tok, ':') != NULL) {
                 master_array_append(ctx->clean_assembly, char_array_dupe(sub_array));
