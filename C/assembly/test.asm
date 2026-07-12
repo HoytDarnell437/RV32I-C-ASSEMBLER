@@ -1,5 +1,5 @@
 .data
-        .byte 'H' 'e' 'l' 'l' 'o' ' ' 'W' 'o' 'r' 'l' 'd' '!' 0
+        .byte 'H' 'e' 'l' 'l' 'o' ' ' 'W' 'o' 'r' 'l' 'd' '!' '\0'
         .word 808 999 0 77
 .TEXT 
         aDd x1, X2, x3
