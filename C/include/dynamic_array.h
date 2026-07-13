@@ -161,6 +161,29 @@ char *char_array_get(const char_array_t array, int index);
 int char_array_get_size(const char_array_t array);
 
 /**
+ * @brief Sets the value of array at index to num.
+ * @param array Array to set.
+ * @param num Integer to set.
+ * @param index Index of array to set.
+ */
+void int_array_set(int_array_t array, int num, int index);
+
+/**
+ * @brief Retrieves the value of array at index.
+ * @param array Array to retrieve from.
+ * @param index Index of array to retrieve from.
+ * @return Value requested.
+ */
+int int_array_get(const int_array_t array, int index);
+
+/**
+ * @brief Retrieves the size of array.
+ * @param[in] array Array to retieve size from.
+ * @return Size of array.
+ */
+int int_array_get_size(const int_array_t array);
+
+/**
  * @brief Retrieves the value of array at index.
  * @param master Master array to retrieve from.
  * @param index Index of master array to retrieve from.

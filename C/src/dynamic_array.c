@@ -173,7 +173,7 @@ void int_array_append(int_array_t array, int num) {
         array->data = realloc(array->data, array->capacity * sizeof(int));
     }
 
-    array->size++;
+    array->data[array->size++] = num;
 }
 
 void int_array_free(int_array_t array) {
@@ -185,7 +185,7 @@ void int_array_print(const int_array_t array, FILE *file) {
     fprintf(file, "\n--- Printing contents of dynamic integer array (Size: %d  / Capacity: %d) ---\n", array->size, array->capacity);
 
     for (int i = 0; i < array->size; i += 4) {
-        fprintf(file, "%x\n", array->data[i]);
+        fprintf(file, "%02x %02x %02x %02x\n", array->data[i], array->data[i + 1], array->data[i + 2], array->data[i + 3]);
     }
 }
 
