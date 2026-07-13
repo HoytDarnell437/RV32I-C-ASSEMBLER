@@ -238,6 +238,21 @@ static int parse_value(const char *str) {
     }
 
     if (str[0] == '\'' && str[strlen(str) - 1] == '\'') {
+        if (str[1] == '\\') {
+            switch (str[2]) {
+            case '0':
+                return 0;
+            case 'n':
+                return 10;
+            case 't':
+                return 9;
+            case '\\':
+                return 92;
+            case '\'':
+                return 39;
+            }
+        }
+
         return str[1];
     }
 
@@ -353,6 +368,9 @@ static void asm_dump(asm_t *ctx) {
 
     fprintf(file, "\ntext_table:");
     table_print(ctx->text_table, file);
+
+    fprintf(file, "\ndata_image:");
+    int_array_print(ctx->data_image, file);
 
     fclose(file);
 }
