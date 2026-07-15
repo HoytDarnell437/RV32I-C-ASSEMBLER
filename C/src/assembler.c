@@ -184,7 +184,7 @@ static void format_assembly(asm_t *ctx) {
                 char_array_append(sub_array, tok);
             }
 
-            if (strchr(tok, ':') != NULL) {
+            if (strchr(tok, ':') != NULL && strstr(char_array_get(ctx->assembly, i), ".equ") == NULL) {
                 master_array_append(ctx->clean_assembly, char_array_dupe(sub_array));
                 free(char_array_pop(sub_array));
             }
@@ -192,8 +192,7 @@ static void format_assembly(asm_t *ctx) {
             tok = strtok(NULL, " ,()");
         }
 
-        if (char_array_get_size(sub_array) != 0 &&
-            strchr(char_array_get(sub_array, 0), ':') == NULL) {
+        if (char_array_get_size(sub_array) != 0) {
             master_array_append(ctx->clean_assembly, sub_array);
         } else {
             char_array_free(sub_array);
@@ -210,7 +209,7 @@ static void subroutine_gen(asm_t *ctx) {
 
     for (int i = 0; i < master_array_get_size(ctx->clean_assembly); i++) {
         char_array_t line = master_array_get(ctx->clean_assembly, i);
-        char *string = char_array_get(line, 0);
+        const char *string = char_array_get(line, 0);
 
         if (strcmp(string, ".text") == 0) {
             directive = ".text";
