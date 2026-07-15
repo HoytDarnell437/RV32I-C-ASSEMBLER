@@ -11,6 +11,10 @@
 build/
 docs/
 
+# Testing files
+assembly/test.asm
+src/test.c
+
 # Linker output
 *.ilk
 *.map
