@@ -19,7 +19,7 @@
 --- TODO List ---
 1. Implement Remaining Functions
 2. Rewrite doxygen comments to be concise
-3. Current function being implemented: subroutine_gen
+3. Current function being implemented: create_data_file
 */
 
 #define MAX_LINE_LENGTH 512
@@ -203,7 +203,7 @@ static void format_assembly(asm_t *ctx) {
 }
 
 static void subroutine_gen(asm_t *ctx) {
-    char *directive = ".text";
+    const char *directive = ".text";
     int text_counter = 0;
     int data_counter = 2048;
 
@@ -219,8 +219,83 @@ static void subroutine_gen(asm_t *ctx) {
             for (int j = 1; j < char_array_get_size(line); j++) {
                 const char *tok = char_array_get(line, j);
                 int value = parse_value(tok);
-                printf("Parsed Value .word: %d\n", value);
+
+                if (int_array_get_size(ctx->data_image) & 0b11) {
+                    int count = int_array_get_size(ctx->data_image) & 0b11;
+
+                    do {
+                        int_array_append(ctx->data_image, 0);
+                        data_counter += 1;
+                    } while (++count < 4);
+
+                    char *label = char_array_get(master_array_get(ctx->clean_assembly, i - 1), 0);
+
+                    if (table_get(ctx->data_table, label, NULL) == 1) {
+                        table_set(ctx->data_table, label, data_counter);
+                    }
+                }
+
+                int_array_append(ctx->data_image, value & 0x000000ff);
+                int_array_append(ctx->data_image, value >> 8 & 0x000000ff);
+                int_array_append(ctx->data_image, value >> 16 & 0x000000ff);
+                int_array_append(ctx->data_image, value >> 24 & 0x000000ff);
+                data_counter += 4;
             }
+
+        } else if (strcmp(string, ".byte") == 0) {
+            for (int j = 1; j < char_array_get_size(line); j++) {
+                const char *tok = char_array_get(line, j);
+                int value = 0;
+                value += parse_value(tok);
+                int_array_append(ctx->data_image, value);
+                data_counter += 1;
+            }
+
+        } else if (strcmp(string, ".space") == 0) {
+            int space = parse_value(char_array_get(line, 1));
+
+            for (int j = 0; j < space; j++) {
+                int_array_append(ctx->data_image, 0);
+            }
+
+            data_counter += space;
+
+        } else if (strcmp(string, ".align") == 0) {
+            int align_to = pow(2, parse_value(char_array_get(line, 1)));
+
+            if (align_to >= 2) {
+                int remainder = data_counter % align_to;
+
+                if (remainder > 0) {
+
+                    int space = align_to - remainder;
+
+                    for (int j = 0; j < space; j++) {
+                        int_array_append(ctx->data_image, 0);
+                    }
+
+                    data_counter += space;
+                }
+            }
+        } else if (char_array_get_size(line) > 1 && strcmp(char_array_get(line, 1), ".equ") == 0) {
+            const char *label = string;
+            char clean_label[32];
+            get_substring(label, 0, strlen(label) - 2, clean_label);
+            table_set(ctx->const_table, clean_label, parse_value(char_array_get(line, 2)));
+
+        } else if (string[0] == '.') {
+
+            fprintf(stderr, "Error: Unsupported riscv directive used \"%s\"\n", string);
+
+        } else if (string[strlen(string) - 1] == ':') {
+
+            if (strcmp(directive, ".text") == 0) {
+                table_set(ctx->text_table, string, text_counter);
+            } else {
+                table_set(ctx->data_table, string, data_counter);
+            }
+        } else {
+            text_counter += 4;
         }
     }
 }
