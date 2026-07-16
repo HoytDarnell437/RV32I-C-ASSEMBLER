@@ -126,6 +126,8 @@ void assemble(const char *filename) {
     format_assembly(&ctx);
     subroutine_gen(&ctx);
 
+    create_data_file(&ctx);
+
     // TODO 1
 
     asm_dump(&ctx);
@@ -300,7 +302,28 @@ static void subroutine_gen(asm_t *ctx) {
     }
 }
 
-static void create_data_file(const asm_t *ctx) {}
+static void create_data_file(asm_t *ctx) {
+    FILE *file = fopen("build/data.hex", "w");
+    int line_count = int_array_get_size(ctx->data_image);
+
+    if (!file) {
+        asm_error(ctx, "Error: could not open build/data.hex\n");
+    }
+
+    if (line_count < 1) {
+        fclose(file);
+    } else {
+        for (int i = 0; i < line_count; i++) {
+            fprintf(file, "%02x", int_array_get(ctx->data_image, i));
+            
+            if (((i + 1) & 0b11) == 0) {
+                fputs("\n", file);
+            }
+        }
+    }
+
+    fclose(file);
+}
 
 static void isolate_instructions(asm_t *ctx) {}
 
