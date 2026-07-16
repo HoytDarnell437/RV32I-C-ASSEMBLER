@@ -19,7 +19,7 @@
 --- TODO List ---
 1. Implement Remaining Functions
 2. Rewrite doxygen comments to be concise
-3. Current function being implemented: create_data_file
+3. Current function being implemented: create_instruction_file
 */
 
 #define MAX_LINE_LENGTH 512
@@ -37,7 +37,7 @@ typedef struct {
     table_t text_table;                 /**< Table with the text labels as keys and their addresses as corresponding values. */
     table_t const_table;                /**< Table with constant labels as the keys and their corresponding values. */
     int_array_t data_image;             /**< Array of data initialization contents. */
-    char *instructions;                 /**< Array of instructions. */
+    master_char_array_t instructions;   /**< Array of instructions. */
 } asm_t;
 
 /* asm_t Associated Functions */
@@ -85,15 +85,10 @@ static void format_assembly(asm_t *ctx);
 
 /**
  * @brief Take in the structured assembly and produce a constant value table, a table of instruction labels and their addresses,
- * a table of data labels and their addresses, and an array of bytes making up the initial data image.
+ * a table of data labels and their addresses, an array of bytes making up the initial data image, and a list containing the instructions.
  *  @param ctx Pointer to the active assembler context structure.
  */
 static void subroutine_gen(asm_t *ctx);
-
-/**
- * TODO
- */
-static void isolate_instructions(asm_t *ctx);
 
 /* Output Generators */
 
@@ -146,7 +141,7 @@ void assemble(const char *filename) {
 
     create_data_file(&ctx);
 
-    // TODO 1
+    // TODO
 
     asm_dump(&ctx);
 
@@ -316,6 +311,8 @@ static void subroutine_gen(asm_t *ctx) {
             }
         } else {
             text_counter += 4;
+            char_array_t sub_array = char_array_dupe(line);
+            master_array_append(ctx->instructions, sub_array);
         }
     }
 }
@@ -333,7 +330,7 @@ static void create_data_file(asm_t *ctx) {
     } else {
         for (int i = 0; i < line_count; i++) {
             fprintf(file, "%02x", int_array_get(ctx->data_image, i));
-            
+
             if (((i + 1) & 0b11) == 0) {
                 fputs("\n", file);
             }
@@ -342,8 +339,6 @@ static void create_data_file(asm_t *ctx) {
 
     fclose(file);
 }
-
-static void isolate_instructions(asm_t *ctx) {}
 
 static void create_instruction_file(asm_t *ctx) {}
 
@@ -448,6 +443,7 @@ static void asm_init(asm_t *ctx, const char *filename) {
     ctx->data_table = table_create(4);
     ctx->text_table = table_create(4);
     ctx->data_image = int_array_create(4);
+    ctx->instructions = master_array_create(4);
 }
 
 static void asm_free(asm_t *ctx) {
@@ -456,6 +452,8 @@ static void asm_free(asm_t *ctx) {
     table_free(ctx->const_table);
     table_free(ctx->data_table);
     table_free(ctx->text_table);
+    int_array_free(ctx->data_image);
+    master_array_free(ctx->instructions);
 
     ctx->filename = NULL;
 }
@@ -487,6 +485,9 @@ static void asm_dump(asm_t *ctx) {
 
     fprintf(file, "\ndata_image:");
     int_array_print(ctx->data_image, file);
+
+    fprintf(file, "\ninstructions:");
+    master_array_print(ctx->instructions, file);
 
     fclose(file);
 }
