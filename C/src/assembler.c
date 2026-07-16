@@ -83,11 +83,29 @@ static void read_assembly(asm_t *ctx);
  */
 static void format_assembly(asm_t *ctx);
 
+/**
+ * @brief Take in the structured assembly and produce a constant value table, a table of instruction labels and their addresses,
+ * a table of data labels and their addresses, and an array of bytes making up the initial data image.
+ *  @param ctx Pointer to the active assembler context structure.
+ */
 static void subroutine_gen(asm_t *ctx);
+
+/**
+ * TODO
+ */
 static void isolate_instructions(asm_t *ctx);
 
 /* Output Generators */
+
+/**
+ * @brief Takes in a data image and writes the contents to a file named data.hex.
+ * @param ctx Pointer to the active assembler contect structure.
+ */
 static void create_data_file(asm_t *ctx);
+
+/**
+ * TODO
+ */
 static void create_instruction_file(asm_t *ctx);
 
 /* Helper Functions */
