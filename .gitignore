@@ -12,8 +12,8 @@ build/
 docs/
 
 # Testing files
-assembly/test.asm
-src/test.c
+C/assembly/test.asm
+C/src/test.c
 
 # Linker output
 *.ilk
