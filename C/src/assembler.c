@@ -87,8 +87,8 @@ static void subroutine_gen(asm_t *ctx);
 static void isolate_instructions(asm_t *ctx);
 
 /* Output Generators */
-static void create_data_file(const asm_t *ctx);
-static void create_instruction_file(const asm_t *ctx);
+static void create_data_file(asm_t *ctx);
+static void create_instruction_file(asm_t *ctx);
 
 /* Helper Functions */
 /**
@@ -228,7 +228,7 @@ static void subroutine_gen(asm_t *ctx) {
                         data_counter += 1;
                     } while (++count < 4);
 
-                    char *label = char_array_get(master_array_get(ctx->clean_assembly, i - 1), 0);
+                    const char *label = char_array_get(master_array_get(ctx->clean_assembly, i - 1), 0);
 
                     if (table_get(ctx->data_table, label, NULL) == 1) {
                         table_set(ctx->data_table, label, data_counter);
@@ -304,7 +304,7 @@ static void create_data_file(const asm_t *ctx) {}
 
 static void isolate_instructions(asm_t *ctx) {}
 
-static void create_instruction_file(const asm_t *ctx) {}
+static void create_instruction_file(asm_t *ctx) {}
 
 static int parse_value(const char *str) {
     if (strlen(str) < 1) {
