@@ -74,6 +74,11 @@ void char_array_append(char_array_t array, const char *str) {
         array->data = realloc(array->data, array->capacity * sizeof(char *));
     }
 
+    if (array->data == NULL) {
+        fprintf(stderr, "Error: char_array_append failed to allocate more memory for new entry\n");
+        exit(1);
+    }
+
     if (str != NULL) {
         array->data[array->size] = strdup(str);
     } else {
@@ -240,6 +245,12 @@ void master_array_append(master_char_array_t master, char_array_t sub_array) {
         char_array_t *new_arrays = realloc(master->arrays, master->capacity * sizeof(char_array_t));
         master->arrays = new_arrays;
     }
+
+    if (master->arrays == NULL) {
+        fprintf(stderr, "Error: master_array_append failed to allocate more memory for new sub_array\n");
+        exit(1);
+    }
+
 
     master->arrays[master->size] = sub_array;
     master->size++;

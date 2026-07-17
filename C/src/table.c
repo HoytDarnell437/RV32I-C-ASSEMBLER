@@ -64,6 +64,11 @@ void table_set(table_t table, const char *key, int value) {
         table->capacity *= 2;
         table->pairs = realloc(table->pairs, table->capacity * sizeof(pair_t));
     }
+    
+    if (table->pairs == NULL) {
+        fprintf(stderr, "Error: table_set failed to allocate more memory for new pair\n");
+        exit(1);
+    }
 
     table->pairs[table->size] = pair_create(key, value);
     table->size++;
