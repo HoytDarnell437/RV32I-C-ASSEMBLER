@@ -14,14 +14,6 @@
 #include "../include/register.h"
 #include "../include/table.h"
 
-/*
-
---- TODO List ---
-1. Implement Remaining Functions
-2. Rewrite doxygen comments to be concise
-3. Current function being implemented: create_instruction_file
-*/
-
 #define MAX_LINE_LENGTH 512
 
 /**
@@ -278,7 +270,7 @@ static void subroutine_gen(asm_t *ctx) {
             data_counter += space;
 
         } else if (strcmp(string, ".align") == 0) {
-            int align_to = pow(2, parse_value(char_array_get(line, 1)));
+            int align_to = 1 << parse_value(char_array_get(line, 1));
 
             if (align_to >= 2) {
                 int remainder = data_counter % align_to;
@@ -302,7 +294,7 @@ static void subroutine_gen(asm_t *ctx) {
 
         } else if (string[0] == '.') {
 
-            fprintf(stderr, "Error: Unsupported riscv directive used \"%s\"\n", string);
+            asm_error(ctx, "Error: Unsupported riscv directive used\n");
 
         } else if (string[strlen(string) - 1] == ':') {
             char key[32];
@@ -371,13 +363,13 @@ static void create_instruction_file(asm_t *ctx) {
             instruction = instruction_lookup(mnemonic);
             pc += 4;
 
-            int j = 1;
+            int j = 0;
             int register1 = -1;
             int register2 = -1;
             int register3 = -1;
             int imm = -1;
 
-            do{
+            while (++j < line_length) {
                 const char *entry = char_array_get(line, j);
                 int reg_val = register_lookup(entry);
                 int const_val;
@@ -394,22 +386,16 @@ static void create_instruction_file(asm_t *ctx) {
                         register3 = reg_val;
                     }
                 } else if (table_get(ctx->const_table, entry, &const_val)) {
-                    printf("const\n");
                     imm = const_val;
                 } else if (table_get(ctx->text_table, entry, &text_val)) {
-                    printf("text\n");
                     imm = text_val - pc;
                 } else if (table_get(ctx->data_table, entry, &data_val)) {
-                    printf("data\n");
                     imm = data_val;
                 } else {
-                    printf("parse\n");
                     imm = parse_value(entry);
                 }
                 
-            } while (++j < line_length);
-
-            char_array_print(line, file);
+            }
 
             switch (instruction->type) {
             case R: {
@@ -418,28 +404,42 @@ static void create_instruction_file(asm_t *ctx) {
                 break;
             }
             case I: {
+                if (instruction->funct7 != -1) {
+                    imm = (instruction->funct7 << 5) + imm;
+                }
+
+                if (strcmp(instruction->name, "ecall") == 0) {
+                    register1 = 0;
+                    register2 = 0;
+                    imm = 0;
+                } else if (strcmp(instruction->name, "ebreak") == 0) {
+                    register1 = 0;
+                    register2 = 0;
+                    imm = 1;
+                }
+
                 int hex = ((imm & 0XFFF) << 20) + (register2 << 15) + (instruction->funct3 << 12) + (register1 << 7) + instruction->opcode;
-                fprintf(file, "%.08x\n", hex);
+                fprintf(file, "%.08X\n", hex);
                 break;
             }
             case S: {
                 int hex = ((imm & 0XFE0) << 20) + (register1 << 20) + (register2 << 15) + (instruction->funct3 << 12) + ((imm & 0X01F) << 7) + instruction->opcode;
-                fprintf(file, "%.8x\n", hex);
+                fprintf(file, "%.8X\n", hex);
                 break;
             }
             case B: {
-                int hex = ((imm & 0X1000) << 19) + ((imm & 0X3F0) << 20) + (register2 << 20) + (register1 << 15) + (instruction->funct3 << 12) + ((imm & 0X01E) << 7) + ((imm & 0X800) >> 4) + instruction->opcode;
-                fprintf(file, "%.8x\n", hex);
+                int hex = ((imm & 0X1000) << 19) + ((imm & 0X7E0) << 20) + (register2 << 20) + (register1 << 15) + (instruction->funct3 << 12) + ((imm & 0X01E) << 7) + ((imm & 0X800) >> 4) + instruction->opcode;
+                fprintf(file, "%.8X\n", hex);
                 break;
             }
             case U: {
                 int hex = ((imm & 0XFFFFF) << 12) + (register1 << 7) + instruction->opcode;
-                fprintf(file, "%.8x", hex);
+                fprintf(file, "%.8X\n", hex);
                 break;
             }
             case J: {
                 int hex = ((imm & 0X100000) << 11) + ((imm & 0X7FE) << 20) + ((imm & 0X800) << 9) + (imm & 0XFE000) + (register1 << 7) + instruction->opcode;
-                fprintf(file, "%.8x\n", hex);
+                fprintf(file, "%.8X\n", hex);
                 break;
             }
             }
