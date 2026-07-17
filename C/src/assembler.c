@@ -10,9 +10,9 @@
 
 #include "../include/assembler.h"
 #include "../include/dynamic_array.h"
+#include "../include/instruction.h"
+#include "../include/register.h"
 #include "../include/table.h"
-// #include "../include/instruction.h"
-// #include "../include/register.h"
 
 /*
 
@@ -94,12 +94,13 @@ static void subroutine_gen(asm_t *ctx);
 
 /**
  * @brief Takes in a data image and writes the contents to a file named data.hex.
- * @param ctx Pointer to the active assembler contect structure.
+ * @param ctx Pointer to the active assembler context structure.
  */
 static void create_data_file(asm_t *ctx);
 
 /**
- * TODO
+ * @brief Uses the master_array of instructions to create a file named instructions.hex.
+ * @param ctx pointer to the active assembler context structure.
  */
 static void create_instruction_file(asm_t *ctx);
 
@@ -303,11 +304,13 @@ static void subroutine_gen(asm_t *ctx) {
             fprintf(stderr, "Error: Unsupported riscv directive used \"%s\"\n", string);
 
         } else if (string[strlen(string) - 1] == ':') {
+            char key[32];
+            get_substring(string, 0, strlen(string) - 2, key);
 
             if (strcmp(directive, ".text") == 0) {
-                table_set(ctx->text_table, string, text_counter);
+                table_set(ctx->text_table, key, text_counter);
             } else {
-                table_set(ctx->data_table, string, data_counter);
+                table_set(ctx->data_table, key, data_counter);
             }
         } else {
             text_counter += 4;
