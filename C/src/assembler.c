@@ -141,7 +141,8 @@ void assemble(const char *filename) {
     subroutine_gen(&ctx);
 
     create_data_file(&ctx);
-
+    create_instruction_file(&ctx);
+    
     // TODO
 
     asm_dump(&ctx);
@@ -343,7 +344,109 @@ static void create_data_file(asm_t *ctx) {
     fclose(file);
 }
 
-static void create_instruction_file(asm_t *ctx) {}
+static void create_instruction_file(asm_t *ctx) {
+    FILE *file = fopen("build/instructions.hex", "w");
+
+    if (!file) {
+        asm_error(ctx, "Error: could not open build/instructions.hex\n");
+    }
+
+    if (master_array_get_size(ctx->instructions) < 1) {
+        fclose(file);
+        asm_error(ctx, "Error: Assembly given to assembler must have atleast one instruction\n");
+
+    } else {
+        int length = master_array_get_size(ctx->instructions);
+        int pc = -4;
+        int i = 0;
+
+        do {
+            const instruction_t *instruction;
+            char_array_t line;
+            const char *mnemonic;
+
+            line = master_array_get(ctx->instructions, i);
+            int line_length = char_array_get_size(line);
+            mnemonic = char_array_get(line, 0);
+            instruction = instruction_lookup(mnemonic);
+            pc += 4;
+
+            int j = 1;
+            int register1 = -1;
+            int register2 = -1;
+            int register3 = -1;
+            int imm = -1;
+
+            do{
+                const char *entry = char_array_get(line, j);
+                int reg_val = register_lookup(entry);
+                int const_val;
+                int text_val;
+                int data_val;
+                printf("%s\n", entry);
+                if (reg_val != -1) {
+                    printf("register\n");
+                    if (register1 == -1) {
+                        register1 = reg_val;
+                    } else if (register2 == -1) {
+                        register2 = reg_val;
+                    } else {
+                        register3 = reg_val;
+                    }
+                } else if (table_get(ctx->const_table, entry, &const_val)) {
+                    printf("const\n");
+                    imm = const_val;
+                } else if (table_get(ctx->text_table, entry, &text_val)) {
+                    printf("text\n");
+                    imm = text_val - pc;
+                } else if (table_get(ctx->data_table, entry, &data_val)) {
+                    printf("data\n");
+                    imm = data_val;
+                } else {
+                    printf("parse\n");
+                    imm = parse_value(entry);
+                }
+                
+            } while (++j < line_length);
+
+            char_array_print(line, file);
+
+            switch (instruction->type) {
+            case R: {
+                int hex = (instruction->funct7 << 25) + (register3 << 20) + (register2 << 15) + (instruction->funct3 << 12) + (register1 << 7) + instruction->opcode;
+                fprintf(file, "%.08X\n", hex);
+                break;
+            }
+            case I: {
+                int hex = ((imm & 0XFFF) << 20) + (register2 << 15) + (instruction->funct3 << 12) + (register1 << 7) + instruction->opcode;
+                fprintf(file, "%.08x\n", hex);
+                break;
+            }
+            case S: {
+                int hex = ((imm & 0XFE0) << 20) + (register1 << 20) + (register2 << 15) + (instruction->funct3 << 12) + ((imm & 0X01F) << 7) + instruction->opcode;
+                fprintf(file, "%.8x\n", hex);
+                break;
+            }
+            case B: {
+                int hex = ((imm & 0X1000) << 19) + ((imm & 0X3F0) << 20) + (register2 << 20) + (register1 << 15) + (instruction->funct3 << 12) + ((imm & 0X01E) << 7) + ((imm & 0X800) >> 4) + instruction->opcode;
+                fprintf(file, "%.8x\n", hex);
+                break;
+            }
+            case U: {
+                int hex = ((imm & 0XFFFFF) << 12) + (register1 << 7) + instruction->opcode;
+                fprintf(file, "%.8x", hex);
+                break;
+            }
+            case J: {
+                int hex = ((imm & 0X100000) << 11) + ((imm & 0X7FE) << 20) + ((imm & 0X800) << 9) + (imm & 0XFE000) + (register1 << 7) + instruction->opcode;
+                fprintf(file, "%.8x\n", hex);
+                break;
+            }
+            }
+        } while (++i < length);
+        fclose(file);
+    }
+}
 
 static int parse_value(const char *str) {
     if (strlen(str) < 1) {
