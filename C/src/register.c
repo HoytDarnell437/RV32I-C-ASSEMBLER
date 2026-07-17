@@ -26,6 +26,5 @@ int register_lookup(const char *key) {
         }
     }
 
-    fprintf(stderr, "Error: register lookup given unknown key");
-    exit(1);
+    return -1;
 }
