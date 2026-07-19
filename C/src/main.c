@@ -2,7 +2,7 @@
  * @file main.c
  * @author Hoyt Darnell
  * @date 2026-06-27
- * @brief Assemble and bitstream assembly to FPGA
+ * @brief Produce a data and instruction hex file from an assembly file.
  */
 
 #include <stdio.h>

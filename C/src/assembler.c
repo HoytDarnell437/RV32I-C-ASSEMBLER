@@ -375,9 +375,7 @@ static void create_instruction_file(asm_t *ctx) {
                 int const_val;
                 int text_val;
                 int data_val;
-                printf("%s\n", entry);
                 if (reg_val != -1) {
-                    printf("register\n");
                     if (register1 == -1) {
                         register1 = reg_val;
                     } else if (register2 == -1) {
