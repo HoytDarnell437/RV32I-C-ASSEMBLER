@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../include/instruction.h"
+#include "../include/parse_value.h"
 
 /**
  * @brief Static lookup table containing the RV32I instruction set architecture.
@@ -16,7 +17,7 @@ static const instruction_t instruction_table[] = {
 
     {"lui", U, 0x37, -1, -1}, {"auipc", U, 0x17, -1, -1},
 
-    {"jal", J, 0x6f, -1, -1}, {"j",     J, 0x6f, -1, -1},
+    {"jal", J, 0x6f, -1, -1},
 
     {"beq", B, 0x63, 0x0, -1}, {"bne",  B, 0x63, 0x1, -1}, {"blt",  B, 0x63, 0x4, -1},
     {"bge", B, 0x63, 0x5, -1}, {"bltu", B, 0x63, 0x6, -1}, {"bgeu", B, 0x63, 0x7, -1},
@@ -41,6 +42,18 @@ static const instruction_t instruction_table[] = {
     {NULL}
 };
 
+/**
+ * @brief Static lookup table containing the RV32I psuedo instructions
+ * @note Terminated with a '{NULL}' sentinel entry.
+ */
+static const psuedo_instruction_t psuedo_instruction_table[] = {
+    {"j"},
+    {"li"},
+    {"ret"},
+
+    {NULL}
+};
+
 static void instruction_print(const instruction_t instruction);
 
 
@@ -52,9 +65,10 @@ const instruction_t *instruction_lookup(const char *name) {
                 return &instruction_table[i];
             }
         }
-    }
+        return NULL;
+    } 
 
-    fprintf(stderr, "Error: passed invalid instruction to instruction_lookup '%s'\n", name);
+    fprintf(stderr, "Error: passed NULL instruction to instruction_lookup\n");
     exit(1);
 }
 
@@ -70,4 +84,77 @@ static void instruction_print(const instruction_t instruction) {
     }
 
     printf("\n");
+}
+
+const psuedo_instruction_t *psuedo_instruction_lookup(const char *name){
+    if (name != NULL) {
+
+        for (int i = 0; psuedo_instruction_table[i].name != NULL; i++) {
+            if (strcmp(psuedo_instruction_table[i].name, name) == 0) {
+                return &psuedo_instruction_table[i];
+            }
+        }
+        return NULL;
+    } 
+
+    fprintf(stderr, "Error: passed NULL instruction to psuedo_instruction_lookup\n");
+    exit(1);
+}
+
+void append_psuedo_instruction(const char_array_t instruction, master_char_array_t array){
+    const char *name = char_array_get(instruction, 0);
+    
+    if (strcmp(name, "j") == 0) {
+       char_array_t temp = char_array_create(3);
+       char_array_append(temp, "jal");
+       char_array_append(temp, "x0");
+       char_array_append(temp, char_array_get(instruction, 1));
+       master_array_append(array, temp);
+
+    } else if (strcmp(name, "li") == 0) {
+        const char *reg = char_array_get(instruction, 1);
+        const char *value = char_array_get(instruction, 2);
+        int parsed_value = parse_value(value);
+        char_array_t temp1 = char_array_create(4);
+        int32_t lower_imm = parsed_value & 0xFFF;
+        char lower[7];
+
+        char_array_append(temp1, "addi");
+        char_array_append(temp1, reg);
+
+        if (parsed_value > 2047 || parsed_value < -2048) {
+            char_array_append(temp1, reg);
+            char_array_t temp2 = char_array_create(4);
+            char upper[8];
+            if (lower_imm >= 0x800) {
+                lower_imm -= 0x1000;
+            }
+            int32_t upper_imm = (int32_t)((uint32_t)(parsed_value - lower_imm) >> 12);
+
+            snprintf(upper, sizeof(upper), "%d", upper_imm);
+            
+            char_array_append(temp2, "lui");
+            char_array_append(temp2, reg);
+            char_array_append(temp2, upper);
+            master_array_append(array, temp2);
+        } else {
+            char_array_append(temp1, "x0");
+        }       
+
+        snprintf(lower, sizeof(lower), "%d", lower_imm);
+        char_array_append(temp1, lower);
+        master_array_append(array, temp1);
+        
+    } else if (strcmp(name, "ret") == 0) {
+       char_array_t temp = char_array_create(3);
+       char_array_append(temp, "jalr");
+       char_array_append(temp, "x0");
+       char_array_append(temp, "0");
+       char_array_append(temp, "ra");
+       master_array_append(array, temp);
+
+    } else {
+        fprintf(stderr, "Error: Unsupported psuedo instruction passed to append_psuedo_instruction '%s'\n", name);
+        exit(1);
+    }
 }

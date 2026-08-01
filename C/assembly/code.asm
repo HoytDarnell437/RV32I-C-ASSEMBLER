@@ -110,7 +110,7 @@ here:
                 
                 # exclusive or | x26 = 12
 lXOR:  
-                addi s10, s10, 1
+        addi s10, s10, 1
                 li t0, 0x4 # 0b100
                 li t1, 0x6 # 0b110
                 li t2, 0x2 # 0b010

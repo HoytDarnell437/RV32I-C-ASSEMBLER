@@ -2,8 +2,8 @@
 OUTPUT := build/main
 CFLAGS := -Iinclude
 #RUNFLAGS := ASAN_OPTIONS=detect_leaks=1
-SRC := src/main.c src/assembler.c src/dynamic_array.c src/table.c src/instruction.c src/register.c
-ARG := assembly/test.asm
+SRC := src/main.c src/assembler.c src/dynamic_array.c src/table.c src/instruction.c src/register.c src/parse_value.c
+ARG ?= assembly/test.asm
 
 # Special targets
 .DELETE_ON_ERROR:

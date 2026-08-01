@@ -3,13 +3,13 @@
  * @brief Implementation for assembler.h
  */
 
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "../include/assembler.h"
 #include "../include/dynamic_array.h"
+#include "../include/parse_value.h"
 #include "../include/instruction.h"
 #include "../include/register.h"
 #include "../include/table.h"
@@ -18,11 +18,11 @@
 
 /**
  * @struct asm_t
- * @brief Stores the context for the assembler.
+ * @brief Struct holding the context for the assembler.
  */
 typedef struct {
     const char *filename;               /**< Name of .asm file. */
-    FILE *file;                         /**< Pointer to .asm file. */
+    FILE *file;                         /**< Pointer to the .asm file. */
     char_array_t assembly;              /**< Array of the .asm file's lines. */
     master_char_array_t clean_assembly; /**< 2D Master array of the .asm file's tokens with comments removed. */
     table_t data_table;                 /**< Table with the data labels as keys and their addresses as corresponding values. */
@@ -32,12 +32,12 @@ typedef struct {
     master_char_array_t instructions;   /**< Array of instructions. */
 } asm_t;
 
-/* asm_t Associated Functions */
+// asm_t Associated Functions
 
 /**
  * @brief Initializes all members of ctx.
  * @param ctx Pointer to the active assembler context structure.
- * @param[in] filename Name of .asm file.
+ * @param[in] filename Name of the .asm file.
  */
 static void asm_init(asm_t *ctx, const char *filename);
 
@@ -60,32 +60,32 @@ static void asm_dump(asm_t *ctx);
  */
 static void asm_error(asm_t *ctx, const char *message);
 
-/* Assembly Parsing Pipeline */
+// Assembly Parsing Pipeline
 
 /**
- * @brief Read the .asm file provided and store it in a dynamic array of type char_array_t.
+ * @brief Reads the .asm file provided and store it in a dynamic array of type char_array_t.
  * @param ctx Pointer to the active assembler context structure.
  */
 static void read_assembly(asm_t *ctx);
 
 /**
- * @brief Tokenize raw assembly lines into a structured 2D array.
+ * @brief Tokenizes raw assembly lines into a structured 2D array.
  * Separates lines into separate tokens, removes comments, separates same line labels, and forces lowercase letters.
  * @param ctx Pointer to the active assembler context structure.
  */
 static void format_assembly(asm_t *ctx);
 
 /**
- * @brief Take in the structured assembly and produce a constant value table, a table of instruction labels and their addresses,
+ * @brief Takes in the structured assembly and produces a constant value table, a table of instruction labels and their addresses,
  * a table of data labels and their addresses, an array of bytes making up the initial data image, and a list containing the instructions.
  *  @param ctx Pointer to the active assembler context structure.
  */
 static void subroutine_gen(asm_t *ctx);
 
-/* Output Generators */
+// Output Generators
 
 /**
- * @brief Takes in a data image and writes the contents to a file named data.hex.
+ * @brief Uses the data image produces in subroutine_gen to write the contents to a file named data.hex.
  * @param ctx Pointer to the active assembler context structure.
  */
 static void create_data_file(asm_t *ctx);
@@ -96,24 +96,7 @@ static void create_data_file(asm_t *ctx);
  */
 static void create_instruction_file(asm_t *ctx);
 
-/* Helper Functions */
-/**
- * @brief Convert strings into their ascii values.
- * @param str String to parse the value of.
- */
-static int parse_value(const char *str);
-
-/**
- * @brief Convert strings of decimal numbers into integers.
- * @param str String to convert.
- */
-static int dec_str_int(const char *str);
-
-/**
- * @brief Convert strings of hexadecimal numbers into integers.
- * @param str String to convert.
- */
-static int hex_str_int(const char *str);
+// Helper Functions
 
 /**
  * @brief Copy a string starting at one index and ending on another (inclusive).
@@ -135,10 +118,6 @@ void assemble(const char *filename) {
     create_data_file(&ctx);
     create_instruction_file(&ctx);
     
-    // TODO
-
-    asm_dump(&ctx);
-
     asm_free(&ctx);
 }
 
@@ -214,7 +193,7 @@ static void format_assembly(asm_t *ctx) {
 static void subroutine_gen(asm_t *ctx) {
     const char *directive = ".text";
     int text_counter = 0;
-    int data_counter = 2048;
+    int data_counter = 0;
 
     for (int i = 0; i < master_array_get_size(ctx->clean_assembly); i++) {
         char_array_t line = master_array_get(ctx->clean_assembly, i);
@@ -244,10 +223,10 @@ static void subroutine_gen(asm_t *ctx) {
                     }
                 }
 
-                int_array_append(ctx->data_image, value & 0x000000ff);
-                int_array_append(ctx->data_image, value >> 8 & 0x000000ff);
-                int_array_append(ctx->data_image, value >> 16 & 0x000000ff);
                 int_array_append(ctx->data_image, value >> 24 & 0x000000ff);
+                int_array_append(ctx->data_image, value >> 16 & 0x000000ff);
+                int_array_append(ctx->data_image, value >> 8 & 0x000000ff);
+                int_array_append(ctx->data_image, value & 0x000000ff);
                 data_counter += 4;
             }
 
@@ -307,8 +286,15 @@ static void subroutine_gen(asm_t *ctx) {
             }
         } else {
             text_counter += 4;
-            char_array_t sub_array = char_array_dupe(line);
-            master_array_append(ctx->instructions, sub_array);
+            if (instruction_lookup(char_array_get(line, 0))) {
+                char_array_t sub_array = char_array_dupe(line);
+                master_array_append(ctx->instructions, sub_array);
+            } else if (psuedo_instruction_lookup(char_array_get(line, 0))) {
+                append_psuedo_instruction(line, ctx->instructions);
+            } else {
+                fprintf(stderr, "Unsupported instruction used '%s'\n", char_array_get(line, 0));
+                asm_error(ctx, "Unsupported instruction used\n");
+            }
         }
     }
 }
@@ -444,85 +430,6 @@ static void create_instruction_file(asm_t *ctx) {
         } while (++i < length);
         fclose(file);
     }
-}
-
-static int parse_value(const char *str) {
-    if (strlen(str) < 1) {
-        fprintf(stderr, "Error: Impropper input to parse_value function: NULL or Empty str\n");
-        return (0);
-    }
-
-    if (str[0] == '\'' && str[strlen(str) - 1] == '\'') {
-        if (str[1] == '\\') {
-            switch (str[2]) {
-            case '0':
-                return 0;
-            case 'n':
-                return 10;
-            case 't':
-                return 9;
-            case '\\':
-                return 92;
-            case '\'':
-                return 39;
-            }
-        }
-
-        return str[1];
-    }
-
-    int value = 0;
-
-    if (str[0] == '0' && str[1] == 'x') {
-        if (str[2] == '\0') {
-            fprintf(stderr, "Error: Empty hex constant given to parse_value function \"0x\"\n");
-        }
-
-        value = hex_str_int(str);
-
-    } else {
-        value = dec_str_int(str);
-    }
-
-    return value;
-}
-
-static int dec_str_int(const char *str) {
-    int value = 0;
-    int negative = 0;
-    int i = 0;
-
-    if (str[0] == '-') {
-        negative = 1;
-        i++;
-    }
-
-    do {
-        value *= 10;
-        value += ((int)str[i] - 48);
-    } while (str[++i] != '\0');
-
-    if (negative) {
-        value = -value;
-    }
-
-    return value;
-}
-
-static int hex_str_int(const char *str) {
-    int value = 0;
-    int i = 2;
-
-    do {
-        value *= 16;
-        if (str[i] < 58) {
-            value += ((int)str[i] - 48);
-        } else {
-            value += ((int)str[i] - 87);
-        }
-    } while (str[++i] != '\0');
-
-    return value;
 }
 
 static void get_substring(const char *str, int start, int end, char *dest) {
