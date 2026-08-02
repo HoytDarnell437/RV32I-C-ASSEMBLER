@@ -62,6 +62,6 @@ const psuedo_instruction_t *psuedo_instruction_lookup(const char *name);
  * @param instruction Line using RV32I psuedo instruction.
  * @param array Array of instructions.
  */
-void append_psuedo_instruction(const array_t instruction, array_t array);
+void append_psuedo_instruction(const array_t instruction, array_t array, int *text_counter);
 
 #endif // INSTRUCTION_H

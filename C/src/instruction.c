@@ -102,17 +102,19 @@ const psuedo_instruction_t *psuedo_instruction_lookup(const char *name){
     exit(1);
 }
 
-void append_psuedo_instruction(const array_t instruction, array_t array){
+void append_psuedo_instruction(const array_t instruction, array_t array, int *text_counter){
     const char *name = array_get(instruction, 0);
     
     if (strcmp(name, "j") == 0) {
+       *text_counter  += 4;
        array_t temp = array_create(3);
-       append_string(temp, "jal");
-       append_string(temp, "x0");
-       append_string(temp, array_get(instruction, 1));
+       array_append(temp, strdup("jal"));
+       array_append(temp, strdup("x0"));
+       array_append(temp, strdup(array_get(instruction, 1)));
        array_append(array, temp);
 
     } else if (strcmp(name, "li") == 0) {
+       *text_counter  += 4;
         const char *reg = array_get(instruction, 1);
         const char *value = array_get(instruction, 2);
         int parsed_value = parse_value(value);
@@ -120,11 +122,12 @@ void append_psuedo_instruction(const array_t instruction, array_t array){
         int32_t lower_imm = parsed_value & 0xFFF;
         char lower[7];
 
-        append_string(temp1, "addi");
-        append_string(temp1, reg);
+        array_append(temp1, strdup("addi"));
+        array_append(temp1, strdup(reg));
 
         if (parsed_value > 2047 || parsed_value < -2048) {
-            append_string(temp1, reg);
+           *text_counter  += 4;
+            array_append(temp1, strdup(reg));
             array_t temp2 = array_create(4);
             char upper[8];
             if (lower_imm >= 0x800) {
@@ -134,24 +137,25 @@ void append_psuedo_instruction(const array_t instruction, array_t array){
 
             snprintf(upper, sizeof(upper), "%d", upper_imm);
             
-            append_string(temp2, "lui");
-            append_string(temp2, reg);
-            append_string(temp2, upper);
+            array_append(temp2, strdup("lui"));
+            array_append(temp2, strdup(reg));
+            array_append(temp2, strdup(upper));
             array_append(array, temp2);
         } else {
-            append_string(temp1, "x0");
+            array_append(temp1, strdup("x0"));
         }       
 
         snprintf(lower, sizeof(lower), "%d", lower_imm);
-        append_string(temp1, lower);
+        array_append(temp1, strdup(lower));
         array_append(array, temp1);
         
     } else if (strcmp(name, "ret") == 0) {
+       *text_counter  += 4;
        array_t temp = array_create(3);
-       append_string(temp, "jalr");
-       append_string(temp, "x0");
-       append_string(temp, "0");
-       append_string(temp, "ra");
+       array_append(temp, strdup("jalr"));
+       array_append(temp, strdup("x0"));
+       array_append(temp, strdup("0"));
+       array_append(temp, strdup("ra"));
        array_append(array, temp);
 
     } else {

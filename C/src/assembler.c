@@ -305,11 +305,11 @@ static void subroutine_gen(asm_t *ctx) {
                 table_set(ctx->data_table, key, data_counter);
             }
         } else {
-            text_counter += 4;
             if (instruction_lookup(array_get(line, 0))) {
+                text_counter += 4;
                 array_append(ctx->instructions, line);
             } else if (psuedo_instruction_lookup(array_get(line, 0))) {
-                append_psuedo_instruction(line, ctx->instructions);
+                append_psuedo_instruction(line, ctx->instructions, &text_counter);
             } else {
                 fprintf(stderr, "Unsupported instruction used '%s'\n", (char *) array_get(line, 0));
                 asm_error(ctx, "Unsupported instruction used\n");
@@ -441,7 +441,7 @@ static void create_instruction_file(asm_t *ctx) {
                 break;
             }
             case J: {
-                int hex = ((imm & 0X100000) << 11) + ((imm & 0X7FE) << 20) + ((imm & 0X800) << 9) + (imm & 0XFE000) + (register1 << 7) + instruction->opcode;
+                int hex = ((imm & 0X100000) << 11) + ((imm & 0X7FE) << 20) + ((imm & 0X800) << 9) + (imm & 0XFF000) + (register1 << 7) + instruction->opcode;
                 fprintf(file, "%.8X\n", hex);
                 break;
             }
@@ -527,7 +527,7 @@ static void asm_free(asm_t *ctx) {
         curr = temp[i];
         void *inner_curr;
         
-        if (curr == temp[i-1]) {
+        if (i > 0 && curr == temp[i-1]) {
             continue;
         }
         while ((inner_curr = array_pop(curr))) {

@@ -11,6 +11,7 @@
                 
                 # Shift left logical | x26 = 1
 lSLL:  
+                li s10, 1
                 li s0, 8
                 li s1, 1
                 sll t1, s1, s0
@@ -280,7 +281,7 @@ lBGEU:
                 # jump and link | x26 = 28
 lJAL:  
                 addi s10, s10, 1
-                jal test
+                jal ra, test
                 j lJALR
                 j fail
 test:  
@@ -368,6 +369,7 @@ fail:
                 j fail
                 
 success:  
+                addi s10, x0, -1
                 add s9, x0, x0
                 
 loop:  
