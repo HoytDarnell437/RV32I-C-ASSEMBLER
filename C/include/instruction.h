@@ -58,10 +58,10 @@ const instruction_t *instruction_lookup(const char *name);
 const psuedo_instruction_t *psuedo_instruction_lookup(const char *name);
 
 /**
- * @brief Appends instrcutions psuedo instructions replace to master array.
+ * @brief Appends psuedo instructions to array.
  * @param instruction Line using RV32I psuedo instruction.
  * @param array Array of instructions.
  */
-void append_psuedo_instruction(const char_array_t instruction, master_char_array_t array);
+void append_psuedo_instruction(const array_t instruction, array_t array);
 
 #endif // INSTRUCTION_H

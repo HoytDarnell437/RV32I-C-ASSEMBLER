@@ -56,6 +56,7 @@ static const psuedo_instruction_t psuedo_instruction_table[] = {
 
 static void instruction_print(const instruction_t instruction);
 
+static void append_string (array_t array, const char *str);
 
 const instruction_t *instruction_lookup(const char *name) {
     if (name != NULL) {
@@ -101,30 +102,30 @@ const psuedo_instruction_t *psuedo_instruction_lookup(const char *name){
     exit(1);
 }
 
-void append_psuedo_instruction(const char_array_t instruction, master_char_array_t array){
-    const char *name = char_array_get(instruction, 0);
+void append_psuedo_instruction(const array_t instruction, array_t array){
+    const char *name = array_get(instruction, 0);
     
     if (strcmp(name, "j") == 0) {
-       char_array_t temp = char_array_create(3);
-       char_array_append(temp, "jal");
-       char_array_append(temp, "x0");
-       char_array_append(temp, char_array_get(instruction, 1));
-       master_array_append(array, temp);
+       array_t temp = array_create(3);
+       append_string(temp, "jal");
+       append_string(temp, "x0");
+       append_string(temp, array_get(instruction, 1));
+       array_append(array, temp);
 
     } else if (strcmp(name, "li") == 0) {
-        const char *reg = char_array_get(instruction, 1);
-        const char *value = char_array_get(instruction, 2);
+        const char *reg = array_get(instruction, 1);
+        const char *value = array_get(instruction, 2);
         int parsed_value = parse_value(value);
-        char_array_t temp1 = char_array_create(4);
+        array_t temp1 = array_create(4);
         int32_t lower_imm = parsed_value & 0xFFF;
         char lower[7];
 
-        char_array_append(temp1, "addi");
-        char_array_append(temp1, reg);
+        append_string(temp1, "addi");
+        append_string(temp1, reg);
 
         if (parsed_value > 2047 || parsed_value < -2048) {
-            char_array_append(temp1, reg);
-            char_array_t temp2 = char_array_create(4);
+            append_string(temp1, reg);
+            array_t temp2 = array_create(4);
             char upper[8];
             if (lower_imm >= 0x800) {
                 lower_imm -= 0x1000;
@@ -133,28 +134,40 @@ void append_psuedo_instruction(const char_array_t instruction, master_char_array
 
             snprintf(upper, sizeof(upper), "%d", upper_imm);
             
-            char_array_append(temp2, "lui");
-            char_array_append(temp2, reg);
-            char_array_append(temp2, upper);
-            master_array_append(array, temp2);
+            append_string(temp2, "lui");
+            append_string(temp2, reg);
+            append_string(temp2, upper);
+            array_append(array, temp2);
         } else {
-            char_array_append(temp1, "x0");
+            append_string(temp1, "x0");
         }       
 
         snprintf(lower, sizeof(lower), "%d", lower_imm);
-        char_array_append(temp1, lower);
-        master_array_append(array, temp1);
+        append_string(temp1, lower);
+        array_append(array, temp1);
         
     } else if (strcmp(name, "ret") == 0) {
-       char_array_t temp = char_array_create(3);
-       char_array_append(temp, "jalr");
-       char_array_append(temp, "x0");
-       char_array_append(temp, "0");
-       char_array_append(temp, "ra");
-       master_array_append(array, temp);
+       array_t temp = array_create(3);
+       append_string(temp, "jalr");
+       append_string(temp, "x0");
+       append_string(temp, "0");
+       append_string(temp, "ra");
+       array_append(array, temp);
 
     } else {
         fprintf(stderr, "Error: Unsupported psuedo instruction passed to append_psuedo_instruction '%s'\n", name);
         exit(1);
     }
+}
+
+static void append_string (array_t array, const char *str) {
+    char *entry = malloc(sizeof(str));
+
+       if (!entry) {
+           fprintf(stderr, "error: memory allocation failed in append_string\n");
+           exit(1);
+       }
+
+       strcpy(entry, str);
+       array_append(array, entry);
 }

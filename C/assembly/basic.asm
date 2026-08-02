@@ -18,7 +18,7 @@ routine:
     blt t1, t2, routine # if (sum < target) -> routine
 
 
-addi s1, x0, -1 # Used to mark program completion on waveform
+    addi s1, x0, -1 # Used to mark program completion on waveform
 
 # Infinite loop after program
 loop:

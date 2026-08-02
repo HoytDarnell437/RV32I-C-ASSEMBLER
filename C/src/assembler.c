@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "../include/assembler.h"
 #include "../include/dynamic_array.h"
@@ -23,13 +24,13 @@
 typedef struct {
     const char *filename;               /**< Name of .asm file. */
     FILE *file;                         /**< Pointer to the .asm file. */
-    char_array_t assembly;              /**< Array of the .asm file's lines. */
-    master_char_array_t clean_assembly; /**< 2D Master array of the .asm file's tokens with comments removed. */
+    array_t assembly;              /**< Array of the .asm file's lines. */
+    array_t clean_assembly; /**< 2D Master array of the .asm file's tokens with comments removed. */
     table_t data_table;                 /**< Table with the data labels as keys and their addresses as corresponding values. */
     table_t text_table;                 /**< Table with the text labels as keys and their addresses as corresponding values. */
     table_t const_table;                /**< Table with constant labels as the keys and their corresponding values. */
-    int_array_t data_image;             /**< Array of data initialization contents. */
-    master_char_array_t instructions;   /**< Array of instructions. */
+    array_t data_image;             /**< Array of data initialization contents. */
+    array_t instructions;   /**< Array of instructions. */
 } asm_t;
 
 // asm_t Associated Functions
@@ -63,7 +64,7 @@ static void asm_error(asm_t *ctx, const char *message);
 // Assembly Parsing Pipeline
 
 /**
- * @brief Reads the .asm file provided and store it in a dynamic array of type char_array_t.
+ * @brief Reads the .asm file provided and store it in a dynamic array of type array_t.
  * @param ctx Pointer to the active assembler context structure.
  */
 static void read_assembly(asm_t *ctx);
@@ -91,7 +92,7 @@ static void subroutine_gen(asm_t *ctx);
 static void create_data_file(asm_t *ctx);
 
 /**
- * @brief Uses the master_array of instructions to create a file named instructions.hex.
+ * @brief Uses the array of instructions to create a file named instructions.hex.
  * @param ctx pointer to the active assembler context structure.
  */
 static void create_instruction_file(asm_t *ctx);
@@ -107,6 +108,18 @@ static void create_instruction_file(asm_t *ctx);
  */
 static void get_substring(const char *str, int start, int end, char *dest);
 
+/**
+ * @brief Duplicates an integer value to the heap and returns the pointer.
+ * @param num Number to be duplicated.
+ * @return Returns a pointer to the block allocated on the heap.
+ */
+static void *intdup(int num);
+
+/**
+ * @brief qsort comparison function for pointers
+ */
+int compare_pointer_addresses(const void *a, const void *b);
+
 void assemble(const char *filename) {
     asm_t ctx;
     asm_init(&ctx, filename);
@@ -118,37 +131,46 @@ void assemble(const char *filename) {
     create_data_file(&ctx);
     create_instruction_file(&ctx);
     
+    asm_dump(&ctx);
     asm_free(&ctx);
 }
 
 static void read_assembly(asm_t *ctx) {
     ctx->file = fopen(ctx->filename, "r");
-    char buffer[MAX_LINE_LENGTH];
+    char *line = malloc(MAX_LINE_LENGTH);
 
     if (!ctx->file) {
         asm_error(ctx, "Error: Could not open .asm file");
+    } else if (!line) {
+        asm_error(ctx, "Error: Failed to allocate memory in read_assembly");
     }
 
-    while (fgets(buffer, sizeof(buffer), ctx->file) != NULL) {
-        size_t len = strlen(buffer);
+    while (fgets(line, MAX_LINE_LENGTH, ctx->file) != NULL) {
+        size_t len = strlen(line);
 
-        if (len == sizeof(buffer) - 1 && buffer[len - 1] != '\n' && !feof(ctx->file)) {
+        if (len == MAX_LINE_LENGTH - 1 && line[len - 1] != '\n' && !feof(ctx->file)) {
             asm_error(ctx, "Error: Line in assembly file exceeds MAX_LINE_LENGTH");
         }
 
-        buffer[strcspn(buffer, "\r\n")] = '\0';
-        char_array_append(ctx->assembly, buffer);
-    }
+        line[strcspn(line, "\r\n")] = '\0';
+        array_append(ctx->assembly, line);
+        line = malloc(MAX_LINE_LENGTH);
 
-    char_array_append(ctx->assembly, NULL);
+        if (!line) {
+            asm_error(ctx, "Error: Failed to allocate memory in read_assembly");
+        }
+    }
+    
+    free(line);
+
     fclose(ctx->file);
 }
 
 static void format_assembly(asm_t *ctx) {
-    for (int i = 0; char_array_get(ctx->assembly, i) != NULL; i++) {
-        char *str = strdup(char_array_get(ctx->assembly, i));
+    for (int i = 0; i < array_get_size(ctx->assembly); i++) {
+        char *str = strdup(array_get(ctx->assembly, i));
         char *tok = strtok(str, " ,()");
-        char_array_t sub_array = char_array_create(1);
+        array_t sub_array = array_create(1);
 
         while (tok != NULL) {
             if (tok[0] == '#') {
@@ -163,27 +185,26 @@ static void format_assembly(asm_t *ctx) {
                     tok[j] += 32;
                 }
             }
-
+            
             if (strcmp(tok, "'") == 0) {
-                char_array_append(sub_array, "' '");
+                array_append(sub_array, strdup("' '"));
                 tok = strtok(NULL, " ,()");
             } else {
-                // Note: array_append handles deep-copying internally via strdup
-                char_array_append(sub_array, tok);
+                array_append(sub_array, strdup(tok));
             }
 
-            if (strchr(tok, ':') != NULL && strstr(char_array_get(ctx->assembly, i), ".equ") == NULL) {
-                master_array_append(ctx->clean_assembly, char_array_dupe(sub_array));
-                free(char_array_pop(sub_array));
+            if (strchr(tok, ':') != NULL && strstr(array_get(ctx->assembly, i), ".equ") == NULL) {
+                array_append(ctx->clean_assembly, array_dupe(sub_array));
+                array_pop(sub_array);
             }
 
             tok = strtok(NULL, " ,()");
         }
 
-        if (char_array_get_size(sub_array) != 0) {
-            master_array_append(ctx->clean_assembly, sub_array);
+        if (array_get_size(sub_array) != 0) {
+            array_append(ctx->clean_assembly, sub_array);
         } else {
-            char_array_free(sub_array);
+            array_free(sub_array);
         }
 
         free(str);
@@ -195,61 +216,60 @@ static void subroutine_gen(asm_t *ctx) {
     int text_counter = 0;
     int data_counter = 0;
 
-    for (int i = 0; i < master_array_get_size(ctx->clean_assembly); i++) {
-        char_array_t line = master_array_get(ctx->clean_assembly, i);
-        const char *string = char_array_get(line, 0);
-
+    for (int i = 0; i < array_get_size(ctx->clean_assembly); i++) {
+        array_t line = (array_t) array_get(ctx->clean_assembly, i);
+        const char *string = array_get(line, 0);
         if (strcmp(string, ".text") == 0) {
             directive = ".text";
         } else if (strcmp(string, ".data") == 0) {
             directive = ".data";
         } else if (strcmp(string, ".word") == 0) {
-            for (int j = 1; j < char_array_get_size(line); j++) {
-                const char *tok = char_array_get(line, j);
+            for (int j = 1; j < array_get_size(line); j++) {
+                const char *tok = array_get(line, j);
                 int value = parse_value(tok);
 
-                if (int_array_get_size(ctx->data_image) & 0b11) {
-                    int count = int_array_get_size(ctx->data_image) & 0b11;
+                if (array_get_size(ctx->data_image) & 0b11) {
+                    int count = array_get_size(ctx->data_image) & 0b11;
 
                     do {
-                        int_array_append(ctx->data_image, 0);
+                        array_append(ctx->data_image, intdup(0));
                         data_counter += 1;
                     } while (++count < 4);
 
-                    const char *label = char_array_get(master_array_get(ctx->clean_assembly, i - 1), 0);
+                    const char *label = array_get((array_t) array_get(ctx->clean_assembly, i - 1), 0);
 
                     if (table_get(ctx->data_table, label, NULL) == 1) {
                         table_set(ctx->data_table, label, data_counter);
                     }
                 }
 
-                int_array_append(ctx->data_image, value >> 24 & 0x000000ff);
-                int_array_append(ctx->data_image, value >> 16 & 0x000000ff);
-                int_array_append(ctx->data_image, value >> 8 & 0x000000ff);
-                int_array_append(ctx->data_image, value & 0x000000ff);
+                array_append(ctx->data_image, intdup(value >> 24 & 0x000000ff));
+                array_append(ctx->data_image, intdup(value >> 16 & 0x000000ff));
+                array_append(ctx->data_image, intdup(value >> 8 & 0x000000ff));
+                array_append(ctx->data_image, intdup(value & 0x000000ff));
                 data_counter += 4;
             }
 
         } else if (strcmp(string, ".byte") == 0) {
-            for (int j = 1; j < char_array_get_size(line); j++) {
-                const char *tok = char_array_get(line, j);
+            for (int j = 1; j < array_get_size(line); j++) {
+                const char *tok = array_get(line, j);
                 int value = 0;
                 value += parse_value(tok);
-                int_array_append(ctx->data_image, value);
+                array_append(ctx->data_image, intdup(value));
                 data_counter += 1;
             }
 
         } else if (strcmp(string, ".space") == 0) {
-            int space = parse_value(char_array_get(line, 1));
+            int space = parse_value(array_get(line, 1));
 
             for (int j = 0; j < space; j++) {
-                int_array_append(ctx->data_image, 0);
+                array_append(ctx->data_image, intdup(0));
             }
 
             data_counter += space;
 
         } else if (strcmp(string, ".align") == 0) {
-            int align_to = 1 << parse_value(char_array_get(line, 1));
+            int align_to = 1 << parse_value(array_get(line, 1));
 
             if (align_to >= 2) {
                 int remainder = data_counter % align_to;
@@ -259,17 +279,17 @@ static void subroutine_gen(asm_t *ctx) {
                     int space = align_to - remainder;
 
                     for (int j = 0; j < space; j++) {
-                        int_array_append(ctx->data_image, 0);
+                        array_append(ctx->data_image, intdup(0));
                     }
 
                     data_counter += space;
                 }
             }
-        } else if (char_array_get_size(line) > 1 && strcmp(char_array_get(line, 1), ".equ") == 0) {
+        } else if (array_get_size(line) > 1 && strcmp(array_get(line, 1), ".equ") == 0) {
             const char *label = string;
             char clean_label[32];
             get_substring(label, 0, strlen(label) - 2, clean_label);
-            table_set(ctx->const_table, clean_label, parse_value(char_array_get(line, 2)));
+            table_set(ctx->const_table, clean_label, parse_value(array_get(line, 2)));
 
         } else if (string[0] == '.') {
 
@@ -286,13 +306,12 @@ static void subroutine_gen(asm_t *ctx) {
             }
         } else {
             text_counter += 4;
-            if (instruction_lookup(char_array_get(line, 0))) {
-                char_array_t sub_array = char_array_dupe(line);
-                master_array_append(ctx->instructions, sub_array);
-            } else if (psuedo_instruction_lookup(char_array_get(line, 0))) {
+            if (instruction_lookup(array_get(line, 0))) {
+                array_append(ctx->instructions, line);
+            } else if (psuedo_instruction_lookup(array_get(line, 0))) {
                 append_psuedo_instruction(line, ctx->instructions);
             } else {
-                fprintf(stderr, "Unsupported instruction used '%s'\n", char_array_get(line, 0));
+                fprintf(stderr, "Unsupported instruction used '%s'\n", (char *) array_get(line, 0));
                 asm_error(ctx, "Unsupported instruction used\n");
             }
         }
@@ -301,7 +320,7 @@ static void subroutine_gen(asm_t *ctx) {
 
 static void create_data_file(asm_t *ctx) {
     FILE *file = fopen("build/data.hex", "w");
-    int line_count = int_array_get_size(ctx->data_image);
+    int line_count = array_get_size(ctx->data_image);
 
     if (!file) {
         asm_error(ctx, "Error: could not open build/data.hex\n");
@@ -311,7 +330,7 @@ static void create_data_file(asm_t *ctx) {
         fclose(file);
     } else {
         for (int i = 0; i < line_count; i++) {
-            fprintf(file, "%02x", int_array_get(ctx->data_image, i));
+            fprintf(file, "%02x", *(int *) array_get(ctx->data_image, i));
 
             if (((i + 1) & 0b11) == 0) {
                 fputs("\n", file);
@@ -329,23 +348,23 @@ static void create_instruction_file(asm_t *ctx) {
         asm_error(ctx, "Error: could not open build/instructions.hex\n");
     }
 
-    if (master_array_get_size(ctx->instructions) < 1) {
+    if (array_get_size(ctx->instructions) < 1) {
         fclose(file);
         asm_error(ctx, "Error: Assembly given to assembler must have atleast one instruction\n");
 
     } else {
-        int length = master_array_get_size(ctx->instructions);
+        int length = array_get_size(ctx->instructions);
         int pc = -4;
         int i = 0;
 
         do {
             const instruction_t *instruction;
-            char_array_t line;
+            array_t line;
             const char *mnemonic;
 
-            line = master_array_get(ctx->instructions, i);
-            int line_length = char_array_get_size(line);
-            mnemonic = char_array_get(line, 0);
+            line = (array_t) array_get(ctx->instructions, i);
+            int line_length = array_get_size(line);
+            mnemonic = array_get(line, 0);
             instruction = instruction_lookup(mnemonic);
             pc += 4;
 
@@ -356,7 +375,7 @@ static void create_instruction_file(asm_t *ctx) {
             int imm = -1;
 
             while (++j < line_length) {
-                const char *entry = char_array_get(line, j);
+                const char *entry = array_get(line, j);
                 int reg_val = register_lookup(entry);
                 int const_val;
                 int text_val;
@@ -446,25 +465,87 @@ static void get_substring(const char *str, int start, int end, char *dest) {
     return;
 }
 
+static void *intdup(int num) {
+    int *nump = malloc(sizeof(num));
+
+    if (!nump) {
+        fprintf(stderr, "Error: intdup failed to allocate memory\n");
+        exit(1);
+    }
+
+    *nump = num;
+    return nump;
+}
+
+int compare_pointer_addresses(const void *a, const void *b) {
+    const char *ptr1 = *(const char **)a;
+    const char *ptr2 = *(const char **)b;
+
+    uintptr_t addr1 = (uintptr_t)ptr1;
+    uintptr_t addr2 = (uintptr_t)ptr2;
+
+    if (addr1 < addr2) return -1;
+    if (addr1 > addr2) return 1;
+    return 0;
+}
+
 static void asm_init(asm_t *ctx, const char *filename) {
     ctx->filename = filename;
-    ctx->assembly = char_array_create(4);
-    ctx->clean_assembly = master_array_create(4);
+    ctx->assembly = array_create(4);
+    ctx->clean_assembly = array_create(4);
     ctx->const_table = table_create(4);
     ctx->data_table = table_create(4);
     ctx->text_table = table_create(4);
-    ctx->data_image = int_array_create(4);
-    ctx->instructions = master_array_create(4);
+    ctx->data_image = array_create(4);
+    ctx->instructions = array_create(4);
 }
 
 static void asm_free(asm_t *ctx) {
-    char_array_free(ctx->assembly);
-    master_array_free(ctx->clean_assembly);
+    void * curr;
+    int temp_length = array_get_size(ctx->clean_assembly) + array_get_size(ctx->instructions);
+    array_t temp[temp_length];
+    int temp_index = 0;
+
+    while ((curr = array_pop(ctx->assembly))) {
+        free(curr);
+    }
+    array_free(ctx->assembly);
+
+    while ((curr = array_pop(ctx->clean_assembly))) {
+        temp[temp_index] = curr;
+        temp_index++;
+    }
+
+    while ((curr = array_pop(ctx->instructions))) {
+        temp[temp_index] = curr;
+        temp_index++;
+    }
+
+    qsort(temp, temp_length, sizeof(array_t), compare_pointer_addresses);
+
+    for (int i = 0; i < temp_length; i++) {
+        curr = temp[i];
+        void *inner_curr;
+        
+        if (curr == temp[i-1]) {
+            continue;
+        }
+        while ((inner_curr = array_pop(curr))) {
+            free(inner_curr);
+        }
+        array_free(curr);
+    }
+    array_free(ctx->clean_assembly);
+    array_free(ctx->instructions);
+
     table_free(ctx->const_table);
     table_free(ctx->data_table);
     table_free(ctx->text_table);
-    int_array_free(ctx->data_image);
-    master_array_free(ctx->instructions);
+
+    while ((curr = array_pop(ctx->data_image))) {
+        free(curr);
+    }
+    array_free(ctx->data_image);
 
     ctx->filename = NULL;
 }
@@ -479,11 +560,20 @@ static void asm_dump(asm_t *ctx) {
     fprintf(file, "--- asm_t memory dump ---\n");
     fprintf(file, "Source file: %s\n", ctx->filename);
 
-    fprintf(file, "\nassembly:");
-    char_array_print(ctx->assembly, file);
+    fprintf(file, "\n--- Printing Contents of ctx->assembly ---\n");
+    for (int i = 0; i < array_get_size(ctx->assembly); i++) {
+        fprintf(file, "%s\n", (char *) array_get(ctx->assembly, i));
+    }
 
-    fprintf(file, "\nclean_assembly:");
-    master_array_print(ctx->clean_assembly, file);
+    fprintf(file, "\n--- Printing Contents of clean_assembly ---\n");
+    for (int i = 0; i < array_get_size(ctx->clean_assembly); i++) {
+        fprintf(file, "\n- Line %d -\n", i);
+        const array_t temp = (array_t) array_get(ctx->clean_assembly, i);
+
+        for (int j = 0; j < array_get_size(temp); j++) {
+            fprintf(file, "%s\n", (char *) array_get(temp, j));
+        }
+    }
 
     fprintf(file, "\nconst_table:");
     table_print(ctx->const_table, file);
@@ -494,11 +584,20 @@ static void asm_dump(asm_t *ctx) {
     fprintf(file, "\ntext_table:");
     table_print(ctx->text_table, file);
 
-    fprintf(file, "\ndata_image:");
-    int_array_print(ctx->data_image, file);
+    fprintf(file, "\n--- Printing Contents of data_image ---\n");
+    for (int i = 0; i < array_get_size(ctx->data_image); i = i + 4) {
+        fprintf(file, "%02x %02x %02x %02x\n", *(int *) array_get(ctx->data_image, i), *(int *) array_get(ctx->data_image, i + 1), *(int *) array_get(ctx->data_image, i + 2), *(int *) array_get(ctx->data_image, i + 3));
+    }
 
-    fprintf(file, "\ninstructions:");
-    master_array_print(ctx->instructions, file);
+    fprintf(file, "\n--- Printing Contents of ctx->instructions ---\n");
+    for (int i = 0; i < array_get_size(ctx->instructions); i++) {
+        fprintf(file, "\n- Line %d -\n", i);
+        const array_t temp = (array_t) array_get(ctx->instructions, i);
+
+        for (int j = 0; j < array_get_size(temp); j++) {
+            fprintf(file, "%s\n", (char *) array_get(temp, j));
+        }
+    }
 
     fclose(file);
 }
