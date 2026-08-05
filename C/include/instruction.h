@@ -9,6 +9,7 @@
 #define INSTRUCTION_H
 
 #include "dynamic_array.h"
+#include "table.h"
 
 /**
  * @enum instr_type_t
@@ -62,6 +63,6 @@ const psuedo_instruction_t *psuedo_instruction_lookup(const char *name);
  * @param instruction Line using RV32I psuedo instruction.
  * @param array Array of instructions.
  */
-void append_psuedo_instruction(const array_t instruction, array_t array, int *text_counter);
+void append_psuedo_instruction(const array_t instruction, array_t array, int *text_counter, table_t table);
 
 #endif // INSTRUCTION_H

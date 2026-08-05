@@ -285,11 +285,9 @@ static void subroutine_gen(asm_t *ctx) {
                     data_counter += space;
                 }
             }
-        } else if (array_get_size(line) > 1 && strcmp(array_get(line, 1), ".equ") == 0) {
-            const char *label = string;
-            char clean_label[32];
-            get_substring(label, 0, strlen(label) - 2, clean_label);
-            table_set(ctx->const_table, clean_label, parse_value(array_get(line, 2)));
+        } else if (strcmp(string, ".equ") == 0) {
+            const char *label = array_get(line, 1);
+            table_set(ctx->const_table, label, parse_value(array_get(line, 2)));
 
         } else if (string[0] == '.') {
 
@@ -309,9 +307,9 @@ static void subroutine_gen(asm_t *ctx) {
                 text_counter += 4;
                 array_append(ctx->instructions, line);
             } else if (psuedo_instruction_lookup(array_get(line, 0))) {
-                append_psuedo_instruction(line, ctx->instructions, &text_counter);
+                append_psuedo_instruction(line, ctx->instructions, &text_counter, ctx->const_table);
             } else {
-                fprintf(stderr, "Unsupported instruction used '%s'\n", (char *) array_get(line, 0));
+                fprintf(stderr, "ERROR: Unsupported instruction used '%s'\n", (char *) array_get(line, 0));
                 asm_error(ctx, "Unsupported instruction used\n");
             }
         }

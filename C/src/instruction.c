@@ -56,8 +56,6 @@ static const psuedo_instruction_t psuedo_instruction_table[] = {
 
 static void instruction_print(const instruction_t instruction);
 
-static void append_string (array_t array, const char *str);
-
 const instruction_t *instruction_lookup(const char *name) {
     if (name != NULL) {
 
@@ -102,7 +100,7 @@ const psuedo_instruction_t *psuedo_instruction_lookup(const char *name){
     exit(1);
 }
 
-void append_psuedo_instruction(const array_t instruction, array_t array, int *text_counter){
+void append_psuedo_instruction(const array_t instruction, array_t array, int *text_counter, table_t table){
     const char *name = array_get(instruction, 0);
     
     if (strcmp(name, "j") == 0) {
@@ -117,7 +115,10 @@ void append_psuedo_instruction(const array_t instruction, array_t array, int *te
        *text_counter  += 4;
         const char *reg = array_get(instruction, 1);
         const char *value = array_get(instruction, 2);
-        int parsed_value = parse_value(value);
+        int parsed_value;
+        if (!table_get(table, value, &parsed_value)) {
+            parsed_value = parse_value(value);
+        }
         array_t temp1 = array_create(4);
         int32_t lower_imm = parsed_value & 0xFFF;
         char lower[7];
@@ -162,16 +163,4 @@ void append_psuedo_instruction(const array_t instruction, array_t array, int *te
         fprintf(stderr, "Error: Unsupported psuedo instruction passed to append_psuedo_instruction '%s'\n", name);
         exit(1);
     }
-}
-
-static void append_string (array_t array, const char *str) {
-    char *entry = malloc(sizeof(str));
-
-       if (!entry) {
-           fprintf(stderr, "error: memory allocation failed in append_string\n");
-           exit(1);
-       }
-
-       strcpy(entry, str);
-       array_append(array, entry);
 }
