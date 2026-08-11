@@ -50,6 +50,7 @@ static const psuedo_instruction_t psuedo_instruction_table[] = {
     {"j"},
     {"li"},
     {"ret"},
+    {"nop"},
 
     {NULL}
 };
@@ -152,13 +153,21 @@ void append_psuedo_instruction(const array_t instruction, array_t array, int *te
         
     } else if (strcmp(name, "ret") == 0) {
        *text_counter  += 4;
-       array_t temp = array_create(3);
+       array_t temp = array_create(4);
        array_append(temp, strdup("jalr"));
        array_append(temp, strdup("x0"));
        array_append(temp, strdup("0"));
        array_append(temp, strdup("ra"));
        array_append(array, temp);
 
+    }else if (strcmp(name, "nop") == 0) {
+        *text_counter += 4;
+        array_t temp = array_create(4);
+        array_append(temp, strdup("add"));
+        array_append(temp, strdup("x0"));
+        array_append(temp, strdup("x0"));
+        array_append(temp, strdup("x0"));
+        array_append(array, temp);
     } else {
         fprintf(stderr, "Error: Unsupported psuedo instruction passed to append_psuedo_instruction '%s'\n", name);
         exit(1);
